@@ -61,7 +61,8 @@ void game() {
   image(cap, 30, 45);
 
   if (keyPressed == true && key == ENTER) {
-    saveFrame();
+    PImage newImage = cap.get();
+    newImage.save("outputImage.jpg");
   }
 }
 
