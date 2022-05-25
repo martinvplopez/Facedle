@@ -70,10 +70,6 @@ void principal() {
   text("Jugar", width/2-125, height/2+40);
   rect(width/2+50, height/2, 150, 70, 45);
   text("Reglas", width/2+125, height/2+40);
-
-  Point pt= new Point(12, 13);
-  println(pt.x);
-  println(pt.y);
 }
 
 void reglas() {
@@ -97,48 +93,50 @@ void game() {
   }
 
   //Get image from cam
-  img.copy(cam, 0, 0, cam.width, cam.height,
+  img.copy(cam, 0, 0, cam.width, cam.height, 
     0, 0, img.width, img.height);
   img.copyTo();
 
   //Imagen de entrada
   image(img, 30, 45);
-  //Detección de puntos fiduciales
-  ArrayList<MatOfPoint2f> shapes = detectFacemarks(cam);
-  Point [] face = shapes.get(0).toArray();
-  PVector origin = new PVector(0, 0);
-   for (MatOfPoint2f sh : shapes) {
-   Point [] pts = sh.toArray();
-   for (Point pt : pts) {
-   output.println(pt);
-   }
-   output.flush();
-   output.close();
-   drawFacemarks(pts, origin);
-   break;
-   }
 
-  //background(255);
   textAlign(LEFT);
   text("Facedle!", 30, 30);
-  if (keyPressed == true && key == ENTER) {
-    //PImage newImage = cam.get();
-    //newImage.save("outputImage.jpg");
-    Point [] rightEyePts = Arrays.copyOfRange(face, 36, 42);
-    Element rightEye = new Element(rightEyePts);
-    //println(rightEye.getEAR());
-    Point [] leftEyePts = Arrays.copyOfRange(face, 43, 49);
-    Element leftEye = new Element(leftEyePts);
-    Point [] mouthPts = new Point [6];
-    int c=0;
-    for (int i=0; i<8; i++) {
-      if (i!=2 && i!=6) {
-        mouthPts[c]=face[i];
-        c++;
-      }
+  //Detección de puntos fiduciales
+  ArrayList<MatOfPoint2f> shapes = detectFacemarks(cam);
+
+  if (shapes.size() > 0) {
+    Point [] face = shapes.get(0).toArray();
+
+    PVector origin = new PVector(0, 0);
+    for (MatOfPoint2f sh : shapes) {
+      Point [] pts = sh.toArray();
+      drawFacemarks(pts, origin);
+      break;
     }
-    Element mouth = new Element(mouthPts);
-    println("Mouths EAR: " + mouth.getEAR());
+
+
+    //background(255);
+
+    if (keyPressed == true && key == ENTER) {
+      //PImage newImage = cam.get();
+      //newImage.save("outputImage.jpg");
+      Point [] rightEyePts = Arrays.copyOfRange(face, 36, 42);
+      Element rightEye = new Element(rightEyePts);
+      //println(rightEye.getEAR());
+      Point [] leftEyePts = Arrays.copyOfRange(face, 43, 49);
+      Element leftEye = new Element(leftEyePts);
+      Point [] mouthPts = new Point [6];
+      int c=0;
+      for (int i=0; i<8; i++) {
+        if (i!=2 && i!=6) {
+          mouthPts[c]=face[i];
+          c++;
+        }
+      }
+      Element mouth = new Element(mouthPts);
+      println("Mouths EAR: " + mouth.getEAR());
+    }
   }
 }
 
