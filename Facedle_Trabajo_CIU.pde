@@ -1,5 +1,5 @@
-import java.lang.*;
 import processing.video.*;
+import java.lang.*;
 import cvimage.*;
 import org.opencv.core.*;
 //Detectores
@@ -8,6 +8,7 @@ import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.face.Face;
 import org.opencv.face.Facemark;
 
+import java.util.Arrays;
 
 int mode;
 final int PRINCIPAL_MENU=1;
@@ -20,6 +21,8 @@ final int CAPH = 480;
 
 Capture cam;
 CVImage img;
+
+PrintWriter output;
 
 //Detectores
 CascadeClassifier face;
@@ -48,6 +51,8 @@ void setup() {
   fm.loadModel(dataPath(modelFile));
 
   mode=PRINCIPAL_MENU;
+
+  output= createWriter("points.txt");
 }
 
 
@@ -65,6 +70,10 @@ void principal() {
   text("Jugar", width/2-125, height/2+40);
   rect(width/2+50, height/2, 150, 70, 45);
   text("Reglas", width/2+125, height/2+40);
+
+  Point pt= new Point(12, 13);
+  println(pt.x);
+  println(pt.y);
 }
 
 void reglas() {
@@ -85,29 +94,41 @@ void game() {
   if (cam.available()) {
     background(255);
     cam.read();
-
-    //Get image from cam
-    img.copy(cam, 0, 0, cam.width, cam.height, 
-      0, 0, img.width, img.height);
-    img.copyTo();
-
-    //Imagen de entrada
-    image(img, 0, 0);
-    //Detección de puntos fiduciales
-    ArrayList<MatOfPoint2f> shapes = detectFacemarks(cam);
-    PVector origin = new PVector(0, 0);
-    for (MatOfPoint2f sh : shapes) {
-      Point [] pts = sh.toArray();
-      drawFacemarks(pts, origin);
-    }
   }
 
+  //Get image from cam
+  img.copy(cam, 0, 0, cam.width, cam.height,
+    0, 0, img.width, img.height);
+  img.copyTo();
+
+  //Imagen de entrada
+  image(img, 30, 45);
+  //Detección de puntos fiduciales
+  ArrayList<MatOfPoint2f> shapes = detectFacemarks(cam);
+  Point [] face = shapes.get(0).toArray();
+  /*  PVector origin = new PVector(0, 0);
+   for (MatOfPoint2f sh : shapes) {
+   Point [] pts = sh.toArray();
+   for (Point pt : pts) {
+   output.println(pt);
+   }
+   output.flush();
+   output.close();
+   drawFacemarks(pts, origin);
+   break;
+   }*/
+
+  //background(255);
   textAlign(LEFT);
   text("Facedle!", 30, 30);
-
   if (keyPressed == true && key == ENTER) {
-    PImage newImage = cam.get();
-    newImage.save("outputImage.jpg");
+    //PImage newImage = cam.get();
+    //newImage.save("outputImage.jpg");
+    Point [] rightEyePts = Arrays.copyOfRange(face, 36, 42);
+    Eye rightEye = new Eye(rightEyePts);
+    println(rightEye.getEAR());
+    Point [] leftEyePts = Arrays.copyOfRange(face, 43, 49);
+    Eye leftEye = new Eye(leftEyePts);
   }
 }
 
@@ -142,7 +163,7 @@ private ArrayList<MatOfPoint2f> detectFacemarks(PImage i) {
   CVImage im = new CVImage(i.width, i.height);
   im.copyTo(i);
   MatOfRect faces = new MatOfRect();
-  Face.getFacesHAAR(im.getBGR(), faces, dataPath(faceFile)); 
+  Face.getFacesHAAR(im.getBGR(), faces, dataPath(faceFile));
   if (!faces.empty()) {
     fm.fit(im.getBGR(), faces, shapes);
   }
