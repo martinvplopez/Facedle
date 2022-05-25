@@ -16,8 +16,8 @@ final int REGLAS_MENU=2;
 final int GAME_UI=3;
 final int GAME_SETTINGS=4;
 
-final int CAPW = 640;
-final int CAPH = 480;
+final int CAPW = 400;
+final int CAPH = 300;
 
 Capture cam;
 CVImage img;
@@ -32,7 +32,7 @@ Facemark fm;
 String faceFile, modelFile;
 
 void setup() {
-  size(800, 700);
+  size(1080, 700);
 
   cam = new Capture(this, CAPW, CAPH);
   cam.start();
@@ -54,7 +54,6 @@ void setup() {
 
   output= createWriter("points.txt");
 }
-
 
 void principal() {
   textSize(50);
@@ -88,20 +87,27 @@ void reglas() {
 
 void game() {
   if (cam.available()) {
-    background(255);
+    //background(255);
     cam.read();
   }
-
+  textAlign(LEFT);
+  stroke(0);
+  fill(80);
+  textSize(50);
+  text("Facedle!", 30, 60);
+  
+  //Rectangles
+  rect(450,90,600,350);
+  rect(90,530,900,100);
+  
+  
   //Get image from cam
   img.copy(cam, 0, 0, cam.width, cam.height, 
     0, 0, img.width, img.height);
   img.copyTo();
 
   //Imagen de entrada
-  image(img, 30, 45);
-
-  textAlign(LEFT);
-  text("Facedle!", 30, 30);
+  image(img, 30, 90);
   //Detección de puntos fiduciales
   ArrayList<MatOfPoint2f> shapes = detectFacemarks(cam);
 
@@ -114,7 +120,6 @@ void game() {
       drawFacemarks(pts, origin);
       break;
     }
-
 
     //background(255);
 
