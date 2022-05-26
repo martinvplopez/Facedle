@@ -95,14 +95,14 @@ void game() {
   fill(80);
   textSize(50);
   text("Facedle!", 30, 60);
-  
+
   //Rectangles
-  rect(450,90,600,350);
-  rect(90,530,900,100);
-  
-  
+  rect(450, 90, 600, 350);
+  rect(90, 530, 900, 100);
+
+
   //Get image from cam
-  img.copy(cam, 0, 0, cam.width, cam.height, 
+  img.copy(cam, 0, 0, cam.width, cam.height,
     0, 0, img.width, img.height);
   img.copyTo();
 
@@ -120,27 +120,30 @@ void game() {
       drawFacemarks(pts, origin);
       break;
     }
-
     //background(255);
-
-    if (keyPressed == true && key == ENTER) {
-      //PImage newImage = cam.get();
-      //newImage.save("outputImage.jpg");
-      Point [] rightEyePts = Arrays.copyOfRange(face, 36, 42);
-      Element rightEye = new Element(rightEyePts);
-      //println(rightEye.getEAR());
-      Point [] leftEyePts = Arrays.copyOfRange(face, 43, 49);
-      Element leftEye = new Element(leftEyePts);
-      Point [] mouthPts = new Point [6];
-      int c=0;
-      for (int i=0; i<8; i++) {
-        if (i!=2 && i!=6) {
-          mouthPts[c]=face[i];
-          c++;
-        }
+    //PImage newImage = cam.get();
+    //newImage.save("outputImage.jpg");
+    Point [] rightEyePts = Arrays.copyOfRange(face, 36, 42);
+    Element rightEye = new Element(rightEyePts);
+    //println(rightEye.getEAR());
+    Point [] leftEyePts = Arrays.copyOfRange(face, 43, 49);
+    Element leftEye = new Element(leftEyePts);
+    Point [] mouthPts = new Point [6];
+    int c=0;
+    for (int i=0; i<8; i++) {
+      if (i!=2 && i!=6) {
+        mouthPts[c]=face[i];
+        c++;
       }
-      Element mouth = new Element(mouthPts);
-      println("Mouths EAR: " + mouth.getEAR());
+    }
+    Element mouth = new Element(mouthPts);
+    println("Mouths EAR: " + mouth.getEAR());
+    fill(255, 0, 0);
+    textSize(30);
+    text("Right EAR " + rightEye.getEAR(), 500,150 );    
+    text("Left EAR " + leftEye.getEAR(), 500,200 );
+    text("Mouth EAR " + mouth.getEAR(), 500,250 );
+    if (keyPressed && key==ENTER) {
     }
   }
 }
