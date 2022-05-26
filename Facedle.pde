@@ -126,7 +126,7 @@ void game() {
     Point [] rightEyePts = Arrays.copyOfRange(face, 36, 42);
     Element rightEye = new Element(rightEyePts);
     //println(rightEye.getEAR());
-    Point [] leftEyePts = Arrays.copyOfRange(face, 43, 49);
+    Point [] leftEyePts = Arrays.copyOfRange(face, 42, 48);
     Element leftEye = new Element(leftEyePts);
     Point [] mouthPts = new Point [6];
     int c=0;
