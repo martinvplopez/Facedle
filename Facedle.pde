@@ -22,6 +22,9 @@ final int CAPH = 300;
 Capture cam;
 CVImage img;
 
+PImage[] images = new PImage[8];
+boolean[] buttonAct = new boolean[8];
+
 PrintWriter output;
 
 //Detectores
@@ -33,6 +36,10 @@ String faceFile, modelFile;
 
 void setup() {
   size(1080, 700);
+
+  for (int i=1; i<9; i++) {
+    images[i-1] = loadImage("images/"+i+".png");
+  }
 
   cam = new Capture(this, CAPW, CAPH);
   cam.start();
@@ -97,12 +104,25 @@ void game() {
   text("Facedle!", 30, 60);
 
   //Rectangles
-  rect(450, 90, 600, 350);
-  rect(90, 530, 900, 100);
+  rect(450, 90, 600, 400);
 
+  for (int i=0; i<3; i++) {
+    for (int j=0; j<3; j++) {
+      rect(510+i*180, 100+j*130, 120, 120);
+    }
+  }
+
+  rect(90, 540, 900, 100);
+
+  for (int i=0; i<8; i++) {
+    image(images[i], 115+i*110, 550);
+    if (buttonAct[i]) {
+
+    }
+  }
 
   //Get image from cam
-  img.copy(cam, 0, 0, cam.width, cam.height,
+  img.copy(cam, 0, 0, cam.width, cam.height, 
     0, 0, img.width, img.height);
   img.copyTo();
 
@@ -140,9 +160,9 @@ void game() {
     println("Mouths EAR: " + mouth.getEAR());
     fill(255, 0, 0);
     textSize(30);
-    text("Right EAR " + rightEye.getEAR(), 500,150 );    
-    text("Left EAR " + leftEye.getEAR(), 500,200 );
-    text("Mouth EAR " + mouth.getEAR(), 500,250 );
+    text("Right EAR " + rightEye.getEAR(), 500, 150 );    
+    text("Left EAR " + leftEye.getEAR(), 500, 200 );
+    text("Mouth EAR " + mouth.getEAR(), 500, 250 );
     if (keyPressed && key==ENTER) {
     }
   }
@@ -171,6 +191,13 @@ void mouseClicked() {
   }
   if (mode==PRINCIPAL_MENU&&mouseX>=width/2+50 && mouseX<=width/2+200 && mouseY>=height/2 && mouseY<=height/2+70) {
     mode=REGLAS_MENU;
+  }
+  if (mode==GAME_UI) {
+    for (int i=0; i<8; i++) {
+      if (mouseX>=115+i*110 && mouseX<=115+i*110+80 && mouseY>=550 && mouseY<=630) {
+        buttonAct[i] = true;
+      }
+    }
   }
 }
 
