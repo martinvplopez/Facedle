@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 int mode;
 int secuencial;
-int selectedGesture;
+
 
 final int PRINCIPAL_MENU=1;
 final int REGLAS_MENU=2;
@@ -29,7 +29,6 @@ CVImage img;
 PImage[] images = new PImage[8];
 boolean[] buttonAct = new boolean[8];
 
-PrintWriter output;
 
 //Detectores
 CascadeClassifier face;
@@ -41,14 +40,19 @@ String faceFile, modelFile;
 int mouthOpen, mouthClose, eyesOpen, eyesClose;
 
 Player calibration;
-
+Gesture gesture;
 int[] dailyGesture;
+
+int tryNum;
+int possibleTries;
+int [] actualTry;
+int selectedGesture;
+int numSelected;
 
 
 void setup() {
   size(1080, 700);
   secuencial = 1;
-  selectedGesture = -1;
   for (int i=1; i<9; i++) {
     images[i-1] = loadImage("images/"+i+".png");
   }
@@ -70,9 +74,17 @@ void setup() {
   fm.loadModel(dataPath(modelFile));
 
   mode=PRINCIPAL_MENU;
-  
-  Gesture gesture = new Gesture(1);
+
+  gesture = new Gesture(1);
   dailyGesture = gesture.getDailyGesture();
+  for (int i=0; i<3; i++) {
+    println(dailyGesture[i]+" ");
+  }
+  actualTry= new int[3];
+  tryNum=0;
+  possibleTries=gesture.getTries();
+  selectedGesture=-1;
+  numSelected=0;
 }
 
 void draw() {
@@ -155,7 +167,7 @@ void game() {
   }
 
   //Get image from cam
-  img.copy(cam, 0, 0, cam.width, cam.height, 
+  img.copy(cam, 0, 0, cam.width, cam.height,
     0, 0, img.width, img.height);
   img.copyTo();
 
@@ -192,10 +204,41 @@ void game() {
     Element mouth = new Element(mouthPts);
     fill(255, 0, 0);
     textSize(20);
-    text("Right EAR " + rightEye.getEAR(), 30, 420 );    
+    text("Right EAR " + rightEye.getEAR(), 30, 420 );
     text("Left EAR " + leftEye.getEAR(), 30, 450 );
     text("Mouth EAR " + mouth.getEAR(), 30, 480 );
-    if (keyPressed && key==ENTER){
+    if (tryNum==3) {
+      println("HAN terminado tus intentos...");
+    } else {
+      if (keyPressed && key==' ') {
+        // If there has gesture been clicked and there are max clicks, get the try and evaluate it
+        if (selectedGesture!=-1&&numSelected<3) {
+          println("Inserting gesture");
+          actualTry[numSelected]=selectedGesture;
+          selectedGesture=-1;
+          numSelected++;
+        }
+      }
+      if (numSelected==3) {
+        tryNum++;
+        print("Actual try:");
+        for (int i=0; i<3; i++) {
+          print(actualTry[i]+" ");
+        }
+        print("Results:");
+        int []test=gesture.checkGesture(actualTry);
+        int count=0;
+        for (int i=0; i<3; i++) {
+          if (test[i]==1) {
+            count++;
+          }
+          print(test[i]+" ");
+        }
+        if (count==3) {
+          println("RESPUESTA CORRECTA!");
+        }
+        numSelected=0;
+      }
     }
   }
 }
@@ -213,7 +256,7 @@ void calibrate() {
   text("Facedle!", 30, 60);
 
   //Get image from cam
-  img.copy(cam, 0, 0, cam.width, cam.height, 
+  img.copy(cam, 0, 0, cam.width, cam.height,
     0, 0, img.width, img.height);
   img.copyTo();
 
@@ -250,7 +293,7 @@ void calibrate() {
     Element mouth = new Element(mouthPts);
     fill(255, 0, 0);
     textSize(20);
-    text("Right EAR " + rightEye.getEAR(), 30, 420 );    
+    text("Right EAR " + rightEye.getEAR(), 30, 420 );
     text("Left EAR " + leftEye.getEAR(), 30, 450 );
     text("Mouth EAR " + mouth.getEAR(), 30, 480 );
 
@@ -276,10 +319,7 @@ void calibrate() {
       text("- PRESS SPACEBAR to START the game", 500, 150 );
       break;
     }
-
-
     if (keyPressed && key==' ') {
-
       switch(secuencial) {
       case 1:
         int rightEyeOpen = rightEye.getEAR();
@@ -316,8 +356,8 @@ void mouseClicked() {
   if (mode==GAME_UI) {
     for (int i=0; i<8; i++) {
       if (mouseX>=115+i*110 && mouseX<=115+i*110+80 && mouseY>=550 && mouseY<=630) {
-        selectedGesture = i;
-        println(selectedGesture);
+        selectedGesture = i+1;
+        println("Selected:"+selectedGesture);
       }
     }
   }

@@ -32,17 +32,17 @@ public class Player {
    
    }
    
-   public boolean isMouthOpen(int mouth) {
+  /* public boolean isMouthOpen(int mouth) {
      mouthThreshold
      return false;  //Mouth is CLOSED
-   }
+   }*/
 
   public boolean checkGesture(int gesture, int rightEye, int leftEye, int mouth) {
     switch(gesture) {
     case 0:  // Both eyes CLOSE and mouth CLOSE
-      if(){
+      //if(){
         
-      }
+      //}
       break;
       
     case 1:  // left eye OPEN, right eye CLOSE and mouth CLOSE
