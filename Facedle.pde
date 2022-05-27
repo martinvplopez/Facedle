@@ -13,6 +13,7 @@ import java.util.Arrays;
 int mode;
 int secuencial;
 
+boolean newSelection;
 
 final int PRINCIPAL_MENU=1;
 final int REGLAS_MENU=2;
@@ -53,6 +54,7 @@ int numSelected;
 void setup() {
   size(1080, 700);
   secuencial = 1;
+  newSelection = true;
   for (int i=1; i<9; i++) {
     images[i-1] = loadImage("images/"+i+".png");
   }
@@ -167,7 +169,7 @@ void game() {
   }
 
   //Get image from cam
-  img.copy(cam, 0, 0, cam.width, cam.height,
+  img.copy(cam, 0, 0, cam.width, cam.height, 
     0, 0, img.width, img.height);
   img.copyTo();
 
@@ -212,11 +214,12 @@ void game() {
     } else {
       if (keyPressed && key==' ') {
         // If there has gesture been clicked and there are max clicks, get the try and evaluate it
-        if (selectedGesture!=-1&&numSelected<3) {
+        if (selectedGesture!=-1&&numSelected<3 && newSelection) {
           println("Inserting gesture");
           actualTry[numSelected]=selectedGesture;
           selectedGesture=-1;
           numSelected++;
+          newSelection = false;
         }
       }
       if (numSelected==3) {
@@ -240,6 +243,13 @@ void game() {
         numSelected=0;
       }
     }
+    //println(calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR()));
+    if(!newSelection){
+      if (selectedGesture != -1 && calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR())){
+         newSelection = true;
+         println("Validated");
+      }
+    }
   }
 }
 
@@ -256,7 +266,7 @@ void calibrate() {
   text("Facedle!", 30, 60);
 
   //Get image from cam
-  img.copy(cam, 0, 0, cam.width, cam.height,
+  img.copy(cam, 0, 0, cam.width, cam.height, 
     0, 0, img.width, img.height);
   img.copyTo();
 
@@ -304,13 +314,14 @@ void calibrate() {
       textSize(30);
       text("TO PERFORM THE CALIBRATION PLEASE FOLLOW THE NEXT STEPS", 450, 100 );
       textSize(20);
-      text("- CLOSE both your eyes and mouth and then PRESS the SPACEBAR ", 450, 150 );
+      text("- OPEN both your eyes and mouth and then PRESS the SPACEBAR ", 450, 150 );
       break;
     case 2:
       fill(80, 200, 120);
       textSize(30);
       text("GREAT! NOW CONTINUE WITH THE NEXT STEP", 500, 100 );
-      text("- OPEN both your eyes and mouth and then PRESS the SPACEBAR ", 500, 150 );
+      textSize(20);
+      text("- CLOSE both your eyes and mouth and then PRESS the SPACEBAR ", 500, 150 );
       break;
     case 3:
       fill(80, 200, 120);
@@ -358,6 +369,7 @@ void mouseClicked() {
       if (mouseX>=115+i*110 && mouseX<=115+i*110+80 && mouseY>=550 && mouseY<=630) {
         selectedGesture = i+1;
         println("Selected:"+selectedGesture);
+        newSelection = false;
       }
     }
   }

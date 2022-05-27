@@ -35,7 +35,7 @@ public class Gesture {
     return 3;
   }
 
-// Function which evaluates a try, if an action is in correct position(1), in another position(2) or incorrect action(0)
+  // Function which evaluates a try, if an action is in correct position(1), in another position(2) or incorrect action(0)
   public int[] checkGesture(int[] gestureTry) {
     int[] res=new int[3];
     for (int i=0; i<3; i++) {

@@ -1,71 +1,87 @@
 public class Player {
-  float mouthOpened;
-  float mouthClosed;
-  float eyeOpened;
-  float eyeClosed;
-  
-  float mouthThreshold, eyesThreshold;
+  int mouthOpened, mouthClosed;
+  int eyeOpened, eyeClosed;
 
-  public Player(float mouthOpen, float mouthClose, float eyesOpen, float eyesClose) {
+  int mouthThreshold, eyesThreshold;
+
+  public Player(int mouthOpen, int mouthClose, int eyesOpen, int eyesClose) {
     mouthOpened = mouthOpen;
     mouthClosed = mouthClose;
     eyeOpened = eyesOpen;
     eyeClosed = eyesClose;
-    
-    mouthThreshold = mouthOpened - mouthClosed;
-    eyesThreshold = eyeOpened - eyeClosed;
+
+    mouthThreshold = (int)((mouthOpened - mouthClosed)*0.2);
+    eyesThreshold = (int)((eyeOpened - eyeClosed)*0.1); //Error of 50%
   }
-  /**
-   public float getMouthThreshold() {
-   
-   }
-   
-   public float getEyesThreshold() {
-   
-   }*/
-   
-   public boolean isEyeOpen(int eye) {
-     if(eyeOpened - eye <= eyesThreshold){
-       
-     }
-     return false;  //Eye is CLOSED
-   
-   }
-   
-  /* public boolean isMouthOpen(int mouth) {
-     mouthThreshold
-     return false;  //Mouth is CLOSED
-   }*/
 
-  public boolean checkGesture(int gesture, int rightEye, int leftEye, int mouth) {
+  private boolean isOpen(float value, float openValue, float threshold) {
+    //Checks if the value its within the expected error
+    if (value < openValue + threshold && value > openValue - threshold) {
+      return true; //OPEN
+    }
+    //println("Value:"+value+" Open:"+openValue+" Threshold:"+threshold);
+    return false;  //CLOSED
+  }
+
+  public boolean isEyeOpen(float eye) {
+    return isOpen(eye, eyeOpened, eyesThreshold);
+  }
+
+  public boolean isMouthOpen(float mouth) {
+    return isOpen(mouth, mouthOpened, mouthThreshold);
+  }
+
+  public boolean checkMatchingGesture(int gesture, int rightEye, int leftEye, int mouth) {
     switch(gesture) {
-    case 0:  // Both eyes CLOSE and mouth CLOSE
-      //if(){
-        
-      //}
-      break;
-      
-    case 1:  // left eye OPEN, right eye CLOSE and mouth CLOSE
+    case 1:  // Both eyes CLOSED and mouth CLOSED
+      if (!isEyeOpen(leftEye) && !isEyeOpen(rightEye)&& !isMouthOpen(mouth)) {
+        return true;
+      }
       break;
 
-    case 2:  // left eye CLOSE, right eye OPEN and mouth CLOSE
+    case 2:  // left eye OPEN, right eye CLOSED and mouth CLOSED
+      if (isEyeOpen(leftEye) && !isEyeOpen(rightEye)&& !isMouthOpen(mouth)) {
+        return true;
+      }
       break;
 
-    case 3:  // Both eyes OPEN and mouth CLOSE
+    case 3:  // left eye CLOSED, right eye OPEN and mouth CLOSED
+      if (!isEyeOpen(leftEye) && isEyeOpen(rightEye)&& !isMouthOpen(mouth)) {
+        return true;
+      }
       break;
 
-    case 4:  // Both eyes CLOSE and mouth OPEN
+    case 4:  // Both eyes OPEN and mouth CLOSED
+      if (isEyeOpen(leftEye) && isEyeOpen(rightEye)&& !isMouthOpen(mouth)) {
+        return true;
+      }
       break;
 
-    case 5:  // left eye OPEN, right eye CLOSE and mouth OPEN
+    case 5:  // Both eyes CLOSED and mouth OPEN
+      if (!isEyeOpen(leftEye) && !isEyeOpen(rightEye)&& isMouthOpen(mouth)) {
+        return true;
+      }
       break;
 
-    case 6:  // left eye CLOSE, right eye OPEN and mouth OPEN
+    case 6:  // left eye OPEN, right eye CLOSED and mouth OPEN
+      if (isEyeOpen(leftEye) && !isEyeOpen(rightEye)&& isMouthOpen(mouth)) {
+        return true;
+      }
       break;
 
-    case 7:  // Both eyes OPEN and mouth OPEN
+    case 7:  // left eye CLOSED, right eye OPEN and mouth OPEN
+      if (!isEyeOpen(leftEye) && isEyeOpen(rightEye)&& isMouthOpen(mouth)) {
+        return true;
+      }
+      break;
+
+    case 8:  // Both eyes OPEN and mouth OPEN
+      if (isEyeOpen(leftEye) && isEyeOpen(rightEye)&& isMouthOpen(mouth)) {
+        return true;
+      }
       break;
     }
-    return false;
+    //println("Right:"+isEyeOpen(rightEye)+" Left:"+isEyeOpen(leftEye)+" Mouth:"+isMouthOpen(mouth));
+    return false; // The gesture didn't match
   }
 }
