@@ -28,8 +28,9 @@ Capture cam;
 CVImage img;
 
 PImage[] images = new PImage[8];
+PImage config = new PImage();
+PImage help = new PImage();
 boolean[] buttonAct = new boolean[8];
-
 
 //Detectores
 CascadeClassifier face;
@@ -50,6 +51,7 @@ int [] actualTry;
 int selectedGesture;
 int numSelected;
 
+boolean isCalibrated = false;
 
 void setup() {
   size(1080, 700);
@@ -58,6 +60,8 @@ void setup() {
   for (int i=1; i<9; i++) {
     images[i-1] = loadImage("images/"+i+".png");
   }
+  config = loadImage("images/config.png");
+  help = loadImage("images/help.png");
 
   cam = new Capture(this, CAPW, CAPH);
   cam.start();
@@ -102,6 +106,7 @@ void draw() {
     game();
     break;
   case GAME_SETTINGS:
+    game_settings();
     break;
   case CALIBRATE:
     calibrate();
@@ -119,7 +124,7 @@ void principal() {
 
   textSize(28);
   strokeWeight(1.5);
-  
+
   //boton jugar
   if (mouseX>=width/2-200 && mouseX<=width/2-50 && mouseY>=height/2 && mouseY<=height/2+70) {
     fill(80, 200, 120);
@@ -129,7 +134,7 @@ void principal() {
   rect(width/2-200, height/2, 150, 70, 45);
   fill(0);
   text("Jugar", width/2-125, height/2+45);
-  
+
   //boton reglas
   if (mouseX>=width/2+50 && mouseX<=width/2+200 && mouseY>=height/2 && mouseY<=height/2+70) {
     fill(80, 200, 120);
@@ -148,7 +153,7 @@ void reglas() {
   text("Facedle!", width/2, 50);
   textSize(35);
   text("¿Serás capaz de acertar el gesto del día?", width/2, 105);
-  
+
   //boton empezar
   if (mouseX>=width/2+150 && mouseX<=width/2+300 && mouseY>=height/2 && mouseY<=height/2+70) {
     fill(80, 200, 120);
@@ -177,6 +182,14 @@ void game() {
   //Rectangles
   rect(450, 90, 600, 400);
 
+  fill(250);
+  
+  //boton configuración
+  image(config, 935, 25);
+
+  //boton ayuda
+  image(help, 1000, 25);
+  
   for (int i=0; i<3; i++) {
     for (int j=0; j<3; j++) {
       rect(510+i*180, 100+j*130, 120, 120);
@@ -276,6 +289,60 @@ void game() {
   }
 }
 
+void game_settings() {
+  if (cam.available()) {
+    cam.read();
+  }
+
+  textAlign(LEFT);
+  stroke(0);
+  fill(80);
+  textSize(50);
+  text("Facedle!", 30, 60);
+
+  fill(250);
+
+  //boton configuración
+  image(config, 935, 25);
+
+  //boton ayuda
+  image(help, 1000, 25);
+  
+  for (int i=0; i<3; i++) {
+    for (int j=0; j<3; j++) {
+      rect(510+i*180, 100+j*130, 120, 120);
+    }
+  }
+  
+  rect(90, 540, 900, 100);
+
+  for (int i=0; i<8; i++) {
+    image(images[i], 115+i*110, 550);
+    if (buttonAct[i]) {
+    }
+  }
+
+  //Get image from cam
+  img.copy(cam, 0, 0, cam.width, cam.height, 
+    0, 0, img.width, img.height);
+  img.copyTo();
+
+  //Imagen de entrada
+  image(img, 30, 90);
+
+  //menú de ayuda
+  fill(255);
+  rect(width/2-250, 150, 500, 370);
+  fill(100);
+  textSize(12);
+  text("Hard mode\n Do you dare with two tries?", width/2-100, 200);
+  
+  //sale de la configuración
+  if (mousePressed &&(mouseX<=width/2-250 || mouseX>=width/2+250 || mouseY<=150 || mouseY>=520)) {
+    mode = GAME_UI;
+  }
+}
+
 void calibrate() {
   if (cam.available()) {
     //background(255);
@@ -347,7 +414,6 @@ void calibrate() {
       break;
     }
 
-
     switch(secuencial) {
     case 1:
       fill(80, 200, 120);
@@ -390,7 +456,9 @@ void calibrate() {
         break;
       case 3:
         calibration = new Player(mouthOpen, mouthClose, eyesOpen, eyesClose);
+        isCalibrated = true;
         mode=GAME_UI;
+
         break;
       }
     }
@@ -404,6 +472,23 @@ void mouseClicked() {
   if (mode==PRINCIPAL_MENU&&mouseX>=width/2+50 && mouseX<=width/2+200 && mouseY>=height/2 && mouseY<=height/2+70) {
     mode = REGLAS_MENU;
   }
+  //activa la configuracion
+  if (mode==GAME_UI&&mouseX>=935 && mouseX<=975 && mouseY>=25 && mouseY<=65) {
+    mode = GAME_SETTINGS;
+  }
+
+  if (mode==GAME_UI&&mouseX>=1000 && mouseX<=1040 && mouseY>=25 && mouseY<=65) {
+    mode = REGLAS_MENU;
+  }
+
+  if (mode==REGLAS_MENU&&mouseX>=width/2+150 && mouseX<=width/2+300 && mouseY>=height/2 && mouseY<=height/2+70) {
+    if (!isCalibrated) {
+      mode = CALIBRATE;
+    } else {
+      mode = GAME_UI;
+    }
+  }
+
   if (mode==GAME_UI) {
     for (int i=0; i<8; i++) {
       if (mouseX>=115+i*110 && mouseX<=115+i*110+80 && mouseY>=550 && mouseY<=630) {
@@ -412,9 +497,6 @@ void mouseClicked() {
         newSelection = false;
       }
     }
-  }
-  if (mode==REGLAS_MENU&&mouseX>=width/2+150 && mouseX<=width/2+300 && mouseY>=height/2 && mouseY<=height/2+70) {
-    mode = CALIBRATE;
   }
 }
 
