@@ -116,13 +116,29 @@ void principal() {
   text("Facedle!", width/2, 50);
   textSize(35);
   text("¿Serás capaz de acertar el gesto del día?", width/2, 130 );
-  noFill();
-  strokeWeight(1.5);
-  rect(width/2-200, height/2, 150, 70, 45);
+
   textSize(28);
-  text("Jugar", width/2-125, height/2+40);
+  strokeWeight(1.5);
+  
+  //boton jugar
+  if (mouseX>=width/2-200 && mouseX<=width/2-50 && mouseY>=height/2 && mouseY<=height/2+70) {
+    fill(80, 200, 120);
+  } else {
+    noFill();
+  }
+  rect(width/2-200, height/2, 150, 70, 45);
+  fill(0);
+  text("Jugar", width/2-125, height/2+45);
+  
+  //boton reglas
+  if (mouseX>=width/2+50 && mouseX<=width/2+200 && mouseY>=height/2 && mouseY<=height/2+70) {
+    fill(80, 200, 120);
+  } else {
+    noFill();
+  }
   rect(width/2+50, height/2, 150, 70, 45);
-  text("Reglas", width/2+125, height/2+40);
+  fill(0);
+  text("Reglas", width/2+125, height/2+45);
 }
 
 void reglas() {
@@ -132,11 +148,18 @@ void reglas() {
   text("Facedle!", width/2, 50);
   textSize(35);
   text("¿Serás capaz de acertar el gesto del día?", width/2, 105);
-  noFill();
+  
+  //boton empezar
+  if (mouseX>=width/2+150 && mouseX<=width/2+300 && mouseY>=height/2 && mouseY<=height/2+70) {
+    fill(80, 200, 120);
+  } else {
+    noFill();
+  }
   strokeWeight(1.5);
   rect(width/2+150, height/2, 150, 70, 45);
   textSize(28);
-  text("Empezar", width/2+220, height/2+40);
+  fill(0);
+  text("Empezar", width/2+225, height/2+45);
 }
 
 void game() {
@@ -244,10 +267,10 @@ void game() {
       }
     }
     //println(calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR()));
-    if(!newSelection){
-      if (selectedGesture != -1 && calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR())){
-         newSelection = true;
-         println("Validated");
+    if (!newSelection) {
+      if (selectedGesture != -1 && calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR())) {
+        newSelection = true;
+        println("Validated");
       }
     }
   }
@@ -306,6 +329,23 @@ void calibrate() {
     text("Right EAR " + rightEye.getEAR(), 30, 420 );
     text("Left EAR " + leftEye.getEAR(), 30, 450 );
     text("Mouth EAR " + mouth.getEAR(), 30, 480 );
+
+    //progress bar
+    noFill();
+    strokeWeight(1.5);
+    rect(390, 550, 250, 30, 50);
+    switch(secuencial) {
+    case 1:
+      break;
+    case 2:
+      fill(80, 200, 120);
+      rect(390, 550, 125, 30, 50);
+      break;
+    case 3:
+      fill(80, 200, 120);
+      rect(390, 550, 250, 30, 50);
+      break;
+    }
 
 
     switch(secuencial) {
@@ -372,6 +412,9 @@ void mouseClicked() {
         newSelection = false;
       }
     }
+  }
+  if (mode==REGLAS_MENU&&mouseX>=width/2+150 && mouseX<=width/2+300 && mouseY>=height/2 && mouseY<=height/2+70) {
+    mode = CALIBRATE;
   }
 }
 
