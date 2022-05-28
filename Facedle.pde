@@ -179,23 +179,23 @@ void game() {
   textSize(50);
   text("Facedle!", 30, 60);
 
-  //Rectangles
-  rect(450, 90, 600, 400);
-
-  fill(250);
-  
   //boton configuración
   image(config, 935, 25);
 
   //boton ayuda
   image(help, 1000, 25);
-  
+
+  //Rectangles
+  fill(200);
+  rect(450, 90, 600, 400);
+
   for (int i=0; i<3; i++) {
     for (int j=0; j<3; j++) {
       rect(510+i*180, 100+j*130, 120, 120);
     }
   }
 
+  noFill();
   rect(90, 540, 900, 100);
 
   for (int i=0; i<8; i++) {
@@ -300,20 +300,23 @@ void game_settings() {
   textSize(50);
   text("Facedle!", 30, 60);
 
-  fill(250);
-
   //boton configuración
   image(config, 935, 25);
 
   //boton ayuda
   image(help, 1000, 25);
-  
+
+  //Rectangles
+  fill(200);
+  rect(450, 90, 600, 400);
+
   for (int i=0; i<3; i++) {
     for (int j=0; j<3; j++) {
       rect(510+i*180, 100+j*130, 120, 120);
     }
   }
-  
+
+  noFill();
   rect(90, 540, 900, 100);
 
   for (int i=0; i<8; i++) {
@@ -332,11 +335,32 @@ void game_settings() {
 
   //menú de ayuda
   fill(255);
-  rect(width/2-250, 150, 500, 370);
-  fill(100);
-  textSize(12);
-  text("Hard mode\n Do you dare with two tries?", width/2-100, 200);
+  rect(width/2-250, 120, 500, 370);
   
+  fill(100);
+  textSize(17);
+  text("Hard mode\nDo you dare with two tries?", width/2-200, 200);
+  if (mouseX>=width/2+100 && mouseX<=width/2+200 && mouseY>=185 && mouseY<=225) {
+    fill(80, 200, 120);
+  } else {
+    noFill();
+  }
+  rect(width/2+100, 185, 100, 40, 100);
+  fill(0);
+  text("Accept", width/2+123, 210);
+  
+  fill(100);
+  textSize(17);
+  text("Do you want to start a new game?", width/2-200, 320);
+  if (mouseX>=width/2+100 && mouseX<=width/2+200 && mouseY>=300 && mouseY<=340) {
+    fill(80, 200, 120);
+  } else {
+    noFill();
+  }
+  rect(width/2+100, 300, 100, 40, 100);
+  fill(0);
+  text("Reset", width/2+128, 325);
+
   //sale de la configuración
   if (mousePressed &&(mouseX<=width/2-250 || mouseX>=width/2+250 || mouseY<=150 || mouseY>=520)) {
     mode = GAME_UI;
@@ -472,11 +496,11 @@ void mouseClicked() {
   if (mode==PRINCIPAL_MENU&&mouseX>=width/2+50 && mouseX<=width/2+200 && mouseY>=height/2 && mouseY<=height/2+70) {
     mode = REGLAS_MENU;
   }
-  //activa la configuracion
+  //entra en configuracion
   if (mode==GAME_UI&&mouseX>=935 && mouseX<=975 && mouseY>=25 && mouseY<=65) {
     mode = GAME_SETTINGS;
   }
-
+  //entra en reglas
   if (mode==GAME_UI&&mouseX>=1000 && mouseX<=1040 && mouseY>=25 && mouseY<=65) {
     mode = REGLAS_MENU;
   }
