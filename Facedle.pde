@@ -30,6 +30,8 @@ CVImage img;
 PImage[] images = new PImage[8];
 PImage config = new PImage();
 PImage help = new PImage();
+PImage x = new PImage();
+PImage tick = new PImage();
 boolean[] buttonAct = new boolean[8];
 
 //Detectores
@@ -69,6 +71,8 @@ void setup() {
   }
   config = loadImage("images/config.png");
   help = loadImage("images/help.png");
+  x = loadImage("images/x.png");
+  tick = loadImage("images/tick.png");
 
   cam = new Capture(this, CAPW, CAPH);
   cam.start();
@@ -125,12 +129,12 @@ void draw() {
 }
 
 void principal() {
-  textSize(50);
+  textSize(70);
   fill(0);
   textAlign(CENTER);
-  text("Facedle!", width/2, 50);
+  text("Facedle!", width/2, 150);
   textSize(35);
-  text("¿Serás capaz de acertar el gesto del día?", width/2, 130 );
+  text("¿Serás capaz de acertar el gesto del día?", width/2, 230 );
 
   textSize(28);
   strokeWeight(1.5);
@@ -164,26 +168,33 @@ void reglas() {
   text("Facedle!", 30, 60);
   textAlign(CENTER);
   fill(0);
-  textSize(40);
+  textSize(50);
   text("Reglas", width/2, 125);
 
   // List of the rules of the game
-  textSize(20);
-  text("- Adivina la convinacion correcta", width/2, 150);
-  text("- Reglas", width/2, 160);
-  text("- Reglas", width/2, 170);
+  textSize(35);
+  text("- Tienes que adivinar 3 gestos", width/2, 200);
+  text("- Los gestos pueden repetirse", width/2, 250);
+  text("- Los gestos contiguos solo tienen UNA diferencia", width/2, 300);
+  image(images[7], width/2 - 340, 350);
+  image(images[6], width/2 - 240, 350);
+  image(tick, width/2 - 140, 350);
+  image(images[7], width/2 + 60, 350);
+  image(images[4], width/2 + 160, 350);
+  image(x, width/2 + 260, 350);
+  text("- Tienes 3 intentos, ¡buena suerte!", width/2, 500);
 
   //boton empezar
-  if (mouseX>=width/2-75 && mouseX<=width/2+75 && mouseY>=height/2+155 && mouseY<=height/2+200) {
+  if (mouseX>=width/2-75 && mouseX<=width/2+75 && mouseY>=height/2+205 && mouseY<=height/2+250) {
     fill(80, 200, 120);
   } else {
     noFill();
   }
   strokeWeight(1.5);
-  rect(width/2-75, height/2+155, 150, 70, 45);
+  rect(width/2-75, height/2+205, 150, 70, 45);
   textSize(28);
   fill(0);
-  text("Empezar", width/2, height/2+200);
+  text("Empezar", width/2, height/2+250);
 }
 
 void game() {
@@ -265,13 +276,26 @@ void game() {
 
 void game_settings() {
   visualizeGame();
-
   //menú de ayuda
   fill(255);
   rect(width/2-250, 150, 500, 370);
+  fill(50);
+  textSize(28);
+  text("AJUSTES", width/2-60, 195);
+
+
+  if (mouseX>=width/2-180 && mouseX<=width/2-55 && mouseY>=250 && mouseY<=330) fill(51, 173, 189);
+  else noFill();
+  rect(width/2-180, 250, 125, 80);
+  if (mouseX>=width/2+25 && mouseX<=width/2+195 && mouseY>=250 && mouseY<=330) fill(255, 0, 0);
+  else noFill();
+  rect(width/2+25, 250, 170, 80);
   fill(100);
-  textSize(12);
-  text("Hard mode\n Do you dare with two tries?", width/2-100, 200);
+  textSize(23);
+  text("Resetear", width/2-161, 300);
+  //text("You will get another face!\nOnly possible on demo!", width/2-155, 350);
+  textSize(23);
+  text("Volver al MENU", width/2+40, 300);
 
   //sale de la configuración
   if (mousePressed &&(mouseX<=width/2-250 || mouseX>=width/2+250 || mouseY<=150 || mouseY>=520)) {
@@ -282,11 +306,11 @@ void game_settings() {
 void calibrationHelp() {
   fill(51, 173, 189);
   textSize(30);
-  text("CALIBRATION:", 25, 450 );
+  text("CALIBRACIÓN:", 25, 450 );
   textSize(25);
-  text("PLEASE MAKE THE NEXT FACES", 25, 490 );
+  text("IMITA LAS SIGUIENTES CARAS", 25, 490 );
   textSize(18);
-  text("PRESS SPACE TO CONFIRM", width/2-125, 415);
+  text("PULSA ESPACIO PARA CONFIRMAR", width/2-125, 415);
   noFill();
   rect(width/2-95, 460, 86, 86);
   rect(width/2, 460, 86, 86);
@@ -330,7 +354,6 @@ void calibrate() {
 
   switch(secuencial) {
   case 1:
-    //fill(80, 200, 120
     calibrationHelp();
     image(images[7], width/2-92, 463);
     tint(255, 80);
@@ -347,7 +370,9 @@ void calibrate() {
   case 3:
     fill(80, 200, 120);
     textSize(30);
-    text("AWESOME! YOU ARE READY TO START", width/2-240, 463 );
+    text("¡INCREÍBLE, ESTÁS PREPARADO!", width/2-200, 463 );
+    textSize(20);
+    text("PULSA ESPACIO PARA EMPEZAR", width/2-125, 415);
     break;
   }
   if (keyPressed && key==' ') {
@@ -394,7 +419,7 @@ void mouseClicked() {
     mode = REGLAS_MENU;
   }
 
-  if (mode==REGLAS_MENU&&mouseX>=width/2-75 && mouseX<=width/2+75 && mouseY>=height/2+155 && mouseY<=height/2+200) {
+  if (mode==REGLAS_MENU&&mouseX>=width/2-75 && mouseX<=width/2+75 && mouseY>=height/2+205 && mouseY<=height/2+250) {
     if (!isCalibrated) {
       mode = CALIBRATE;
     } else {
