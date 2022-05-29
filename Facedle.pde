@@ -45,6 +45,8 @@ Player calibration;
 Gesture gesture;
 int[] dailyGesture;
 
+Element rightEye, leftEye, mouth;
+
 int tryNum;
 int possibleTries;
 int [] actualTry;
@@ -173,80 +175,47 @@ void reglas() {
 void game() {
   visualizeGame();
 
-  //Detección de puntos fiduciales
-  ArrayList<MatOfPoint2f> shapes = detectFacemarks(cam);
+  detectFaces();
 
-  if (shapes.size() > 0) {
-    Point [] face = shapes.get(0).toArray();
-
-    PVector origin = new PVector(0, 0);
-    for (MatOfPoint2f sh : shapes) {
-      Point [] pts = sh.toArray();
-      drawFacemarks(pts, origin);
-      break;
-    }
-    //background(255);
-    //PImage newImage = cam.get();
-    //newImage.save("outputImage.jpg");
-    Point [] rightEyePts = Arrays.copyOfRange(face, 36, 42);
-    Element rightEye = new Element(rightEyePts);
-    //println(rightEye.getEAR());
-    Point [] leftEyePts = Arrays.copyOfRange(face, 42, 48);
-    Element leftEye = new Element(leftEyePts);
-    Point [] mouthPts = new Point [6];
-    int c=0;
-    for (int i=0; i<8; i++) {
-      if (i!=2 && i!=6) {
-        mouthPts[c]=face[i];
-        c++;
+  if (tryNum==3) {
+    println("HAN terminado tus intentos...");
+  } else {
+    if (keyPressed && key==' ') {
+      // If there has gesture been clicked and there are max clicks, get the try and evaluate it
+      if (selectedGesture!=-1&&numSelected<3 && newSelection) {
+        println("Inserting gesture");
+        actualTry[numSelected]=selectedGesture;
+        selectedGesture=-1;
+        numSelected++;
+        newSelection = false;
       }
     }
-    Element mouth = new Element(mouthPts);
-    fill(255, 0, 0);
-    textSize(20);
-    text("Right EAR " + rightEye.getEAR(), 30, 420 );
-    text("Left EAR " + leftEye.getEAR(), 30, 450 );
-    text("Mouth EAR " + mouth.getEAR(), 30, 480 );
-    if (tryNum==3) {
-      println("HAN terminado tus intentos...");
-    } else {
-      if (keyPressed && key==' ') {
-        // If there has gesture been clicked and there are max clicks, get the try and evaluate it
-        if (selectedGesture!=-1&&numSelected<3 && newSelection) {
-          println("Inserting gesture");
-          actualTry[numSelected]=selectedGesture;
-          selectedGesture=-1;
-          numSelected++;
-          newSelection = false;
-        }
+    if (numSelected==3) {
+      tryNum++;
+      print("Actual try:");
+      for (int i=0; i<3; i++) {
+        print(actualTry[i]+" ");
       }
-      if (numSelected==3) {
-        tryNum++;
-        print("Actual try:");
-        for (int i=0; i<3; i++) {
-          print(actualTry[i]+" ");
+      print("Results:");
+      int []test=gesture.checkGesture(actualTry);
+      int count=0;
+      for (int i=0; i<3; i++) {
+        if (test[i]==1) {
+          count++;
         }
-        print("Results:");
-        int []test=gesture.checkGesture(actualTry);
-        int count=0;
-        for (int i=0; i<3; i++) {
-          if (test[i]==1) {
-            count++;
-          }
-          print(test[i]+" ");
-        }
-        if (count==3) {
-          println("RESPUESTA CORRECTA!");
-        }
-        numSelected=0;
+        print(test[i]+" ");
       }
+      if (count==3) {
+        println("RESPUESTA CORRECTA!");
+      }
+      numSelected=0;
     }
-    //println(calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR()));
-    if (!newSelection) {
-      if (selectedGesture != -1 && calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR())) {
-        newSelection = true;
-        println("Validated");
-      }
+  }
+  //println(calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR()));
+  if (!newSelection) {
+    if (selectedGesture != -1 && calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR())) {
+      newSelection = true;
+      println("Validated");
     }
   }
 }
@@ -286,105 +255,72 @@ void calibrate() {
 
   //Imagen de entrada
   image(img, 30, 90);
-  //Detección de puntos fiduciales
-  ArrayList<MatOfPoint2f> shapes = detectFacemarks(cam);
 
-  if (shapes.size() > 0) {
-    Point [] face = shapes.get(0).toArray();
+  detectFaces();
 
-    PVector origin = new PVector(0, 0);
-    for (MatOfPoint2f sh : shapes) {
-      Point [] pts = sh.toArray();
-      drawFacemarks(pts, origin);
-      break;
-    }
-    //background(255);
-    //PImage newImage = cam.get();
-    //newImage.save("outputImage.jpg");
-    Point [] rightEyePts = Arrays.copyOfRange(face, 36, 42);
-    Element rightEye = new Element(rightEyePts);
-    //println(rightEye.getEAR());
-    Point [] leftEyePts = Arrays.copyOfRange(face, 42, 48);
-    Element leftEye = new Element(leftEyePts);
-    Point [] mouthPts = new Point [6];
-    int c=0;
-    for (int i=0; i<8; i++) {
-      if (i!=2 && i!=6) {
-        mouthPts[c]=face[i];
-        c++;
-      }
-    }
-    Element mouth = new Element(mouthPts);
-    fill(255, 0, 0);
-    textSize(20);
-    text("Right EAR " + rightEye.getEAR(), 30, 420 );
-    text("Left EAR " + leftEye.getEAR(), 30, 450 );
-    text("Mouth EAR " + mouth.getEAR(), 30, 480 );
-
-    //progress bar
-    noFill();
-    strokeWeight(1.5);
+  //progress bar
+  noFill();
+  strokeWeight(1.5);
+  rect(390, 550, 250, 30, 50);
+  switch(secuencial) {
+  case 1:
+    break;
+  case 2:
+    fill(80, 200, 120);
+    rect(390, 550, 125, 30, 50);
+    break;
+  case 3:
+    fill(80, 200, 120);
     rect(390, 550, 250, 30, 50);
+    break;
+  }
+
+  switch(secuencial) {
+  case 1:
+    fill(80, 200, 120);
+    textSize(30);
+    text("TO PERFORM THE CALIBRATION PLEASE FOLLOW THE NEXT STEPS", 450, 100 );
+    textSize(20);
+    text("- OPEN both your eyes and mouth and then PRESS the SPACEBAR ", 450, 150 );
+    break;
+  case 2:
+    fill(80, 200, 120);
+    textSize(30);
+    text("GREAT! NOW CONTINUE WITH THE NEXT STEP", 500, 100 );
+    textSize(20);
+    text("- CLOSE both your eyes and mouth and then PRESS the SPACEBAR ", 500, 150 );
+    break;
+  case 3:
+    fill(80, 200, 120);
+    textSize(30);
+    text("AWESOME! ARE YOU READY TO START?", 500, 100 );
+    text("- PRESS SPACEBAR to START the game", 500, 150 );
+    break;
+  }
+  if (keyPressed && key==' ') {
     switch(secuencial) {
     case 1:
+      int rightEyeOpen = rightEye.getEAR();
+      int leftEyeOpen = leftEye.getEAR();
+      eyesOpen = (rightEyeOpen + leftEyeOpen) / 2;
+
+      mouthOpen = mouth.getEAR();
+      secuencial++;
       break;
     case 2:
-      fill(80, 200, 120);
-      rect(390, 550, 125, 30, 50);
+      int rightEyeClose = rightEye.getEAR();
+      int leftEyeClose = leftEye.getEAR();
+      eyesClose = (rightEyeClose + leftEyeClose) / 2;
+
+      mouthClose = mouth.getEAR();
+      secuencial++;
       break;
     case 3:
-      fill(80, 200, 120);
-      rect(390, 550, 250, 30, 50);
-      break;
-    }
+      calibration = new Player(mouthOpen, mouthClose, eyesOpen, eyesClose);
+      isCalibrated = true;
+      mode=GAME_UI;
 
-    switch(secuencial) {
-    case 1:
-      fill(80, 200, 120);
-      textSize(30);
-      text("TO PERFORM THE CALIBRATION PLEASE FOLLOW THE NEXT STEPS", 450, 100 );
-      textSize(20);
-      text("- OPEN both your eyes and mouth and then PRESS the SPACEBAR ", 450, 150 );
       break;
-    case 2:
-      fill(80, 200, 120);
-      textSize(30);
-      text("GREAT! NOW CONTINUE WITH THE NEXT STEP", 500, 100 );
-      textSize(20);
-      text("- CLOSE both your eyes and mouth and then PRESS the SPACEBAR ", 500, 150 );
-      break;
-    case 3:
-      fill(80, 200, 120);
-      textSize(30);
-      text("AWESOME! ARE YOU READY TO START?", 500, 100 );
-      text("- PRESS SPACEBAR to START the game", 500, 150 );
-      break;
-    }
-    if (keyPressed && key==' ') {
-      switch(secuencial) {
-      case 1:
-        int rightEyeOpen = rightEye.getEAR();
-        int leftEyeOpen = leftEye.getEAR();
-        eyesOpen = (rightEyeOpen + leftEyeOpen) / 2;
-
-        mouthOpen = mouth.getEAR();
-        secuencial++;
-        break;
-      case 2:
-        int rightEyeClose = rightEye.getEAR();
-        int leftEyeClose = leftEye.getEAR();
-        eyesClose = (rightEyeClose + leftEyeClose) / 2;
-
-        mouthClose = mouth.getEAR();
-        secuencial++;
-        break;
-      case 3:
-        calibration = new Player(mouthOpen, mouthClose, eyesOpen, eyesClose);
-        isCalibrated = true;
-        mode=GAME_UI;
-
-        break;
-      }
     }
   }
 }
@@ -421,6 +357,44 @@ void mouseClicked() {
         newSelection = false;
       }
     }
+  }
+}
+
+private void detectFaces() {
+  //Detección de puntos fiduciales
+  ArrayList<MatOfPoint2f> shapes = detectFacemarks(cam);
+
+  if (shapes.size() > 0) {
+    Point [] face = shapes.get(0).toArray();
+
+    PVector origin = new PVector(0, 0);
+    for (MatOfPoint2f sh : shapes) {
+      Point [] pts = sh.toArray();
+      drawFacemarks(pts, origin);
+      break;
+    }
+    //background(255);
+    //PImage newImage = cam.get();
+    //newImage.save("outputImage.jpg");
+    Point [] rightEyePts = Arrays.copyOfRange(face, 36, 42);
+    rightEye = new Element(rightEyePts);
+    //println(rightEye.getEAR());
+    Point [] leftEyePts = Arrays.copyOfRange(face, 42, 48);
+    leftEye = new Element(leftEyePts);
+    Point [] mouthPts = new Point [6];
+    int c=0;
+    for (int i=0; i<8; i++) {
+      if (i!=2 && i!=6) {
+        mouthPts[c]=face[i];
+        c++;
+      }
+    }
+    mouth = new Element(mouthPts);
+    fill(255, 0, 0);
+    textSize(20);
+    text("Right EAR " + rightEye.getEAR(), 30, 420 );
+    text("Left EAR " + leftEye.getEAR(), 30, 450 );
+    text("Mouth EAR " + mouth.getEAR(), 30, 480 );
   }
 }
 
