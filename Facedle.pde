@@ -55,6 +55,11 @@ int numSelected;
 
 boolean isCalibrated = false;
 
+
+PImage[] faceImages = new PImage[9];
+PImage validatedFace;
+int contImages = 0;
+
 void setup() {
   size(1080, 700);
   secuencial = 1;
@@ -152,30 +157,64 @@ void principal() {
 }
 
 void reglas() {
+  textAlign(LEFT);
+  stroke(0);
+  fill(80);
   textSize(50);
-  fill(0);
+  text("Facedle!", 30, 60);
   textAlign(CENTER);
-  text("Facedle!", width/2, 50);
-  textSize(35);
-  text("¿Serás capaz de acertar el gesto del día?", width/2, 105);
+  fill(0);
+  textSize(40);
+  text("Reglas", width/2, 125);
+
+  // List of the rules of the game
+  textSize(20);
+  text("- Adivina la convinacion correcta", width/2, 150);
+  text("- Reglas", width/2, 160);
+  text("- Reglas", width/2, 170);
 
   //boton empezar
-  if (mouseX>=width/2+150 && mouseX<=width/2+300 && mouseY>=height/2 && mouseY<=height/2+70) {
+  if (mouseX>=width/2-75 && mouseX<=width/2+75 && mouseY>=height/2+155 && mouseY<=height/2+200) {
     fill(80, 200, 120);
   } else {
     noFill();
   }
   strokeWeight(1.5);
-  rect(width/2+150, height/2, 150, 70, 45);
+  rect(width/2-75, height/2+155, 150, 70, 45);
   textSize(28);
   fill(0);
-  text("Empezar", width/2+225, height/2+45);
+  text("Empezar", width/2, height/2+200);
 }
 
 void game() {
   visualizeGame();
 
-  detectFaces();
+  detectFaces(30, 420, 35, 90);
+
+  fill(255, 0, 0);
+  textSize(20);
+  text("Right EAR " + rightEye.getEAR(), 30, 420 );
+  text("Left EAR " + leftEye.getEAR(), 30, 450 );
+  text("Mouth EAR " + mouth.getEAR(), 30, 480 );
+
+  //Muestra las fotos de las caras
+  for (int i=0; i<3; i++) {
+    if (faceImages[i]!=null) {
+      image(faceImages[i], 510, 100+130*i);
+    }
+  }
+
+  for (int i=0; i<3; i++) {
+    if (faceImages[i+3]!=null) {
+      image(faceImages[i+3], 690, 100+130*i);
+    }
+  }
+
+  for (int i=0; i<3; i++) {
+    if (faceImages[i+6]!=null) {
+      image(faceImages[i+6], 870, 100+130*i);
+    }
+  }
 
   if (tryNum==3) {
     println("HAN terminado tus intentos...");
@@ -184,6 +223,9 @@ void game() {
       // If there has gesture been clicked and there are max clicks, get the try and evaluate it
       if (selectedGesture!=-1&&numSelected<3 && newSelection) {
         println("Inserting gesture");
+        faceImages[contImages] = validatedFace;
+        faceImages[contImages].resize(120, 120);
+        contImages++;
         actualTry[numSelected]=selectedGesture;
         selectedGesture=-1;
         numSelected++;
@@ -215,6 +257,7 @@ void game() {
   if (!newSelection) {
     if (selectedGesture != -1 && calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR())) {
       newSelection = true;
+      validatedFace = cam.get();
       println("Validated");
     }
   }
@@ -236,12 +279,23 @@ void game_settings() {
   }
 }
 
+void calibrationHelp() {
+  fill(51, 173, 189);
+  textSize(30);
+  text("CALIBRATION:", 25, 450 );
+  textSize(25);
+  text("PLEASE MAKE THE NEXT FACES", 25, 490 );
+  textSize(18);
+  text("PRESS SPACE TO CONFIRM", width/2-125, 415);
+  noFill();
+  rect(width/2-95, 460, 86, 86);
+  rect(width/2, 460, 86, 86);
+}
+
 void calibrate() {
   if (cam.available()) {
-    //background(255);
     cam.read();
   }
-
   textAlign(LEFT);
   stroke(0);
   fill(80);
@@ -254,47 +308,46 @@ void calibrate() {
   img.copyTo();
 
   //Imagen de entrada
-  image(img, 30, 90);
+  image(img, width/2-cam.width/2, 90);
 
-  detectFaces();
-
+  detectFaces(width/2+cam.width/2, cam.height, width/2-cam.width/2, 90);
   //progress bar
   noFill();
   strokeWeight(1.5);
-  rect(390, 550, 250, 30, 50);
+  rect(410, 600, 250, 30, 50);
   switch(secuencial) {
   case 1:
     break;
   case 2:
     fill(80, 200, 120);
-    rect(390, 550, 125, 30, 50);
+    rect(410, 600, 125, 30, 50);
     break;
   case 3:
     fill(80, 200, 120);
-    rect(390, 550, 250, 30, 50);
+    rect(410, 600, 250, 30, 50);
     break;
   }
 
   switch(secuencial) {
   case 1:
-    fill(80, 200, 120);
-    textSize(30);
-    text("TO PERFORM THE CALIBRATION PLEASE FOLLOW THE NEXT STEPS", 450, 100 );
-    textSize(20);
-    text("- OPEN both your eyes and mouth and then PRESS the SPACEBAR ", 450, 150 );
+    //fill(80, 200, 120
+    calibrationHelp();
+    image(images[7], width/2-92, 463);
+    tint(255, 80);
+    image(images[0], width/2+3, 463);
+    tint(255, 255);
     break;
   case 2:
-    fill(80, 200, 120);
-    textSize(30);
-    text("GREAT! NOW CONTINUE WITH THE NEXT STEP", 500, 100 );
-    textSize(20);
-    text("- CLOSE both your eyes and mouth and then PRESS the SPACEBAR ", 500, 150 );
+    calibrationHelp();
+    tint(255, 80);
+    image(images[7], width/2-92, 463);
+    tint(255, 255);
+    image(images[0], width/2+3, 463);
     break;
   case 3:
     fill(80, 200, 120);
     textSize(30);
-    text("AWESOME! ARE YOU READY TO START?", 500, 100 );
-    text("- PRESS SPACEBAR to START the game", 500, 150 );
+    text("AWESOME! YOU ARE READY TO START", width/2-240, 463 );
     break;
   }
   if (keyPressed && key==' ') {
@@ -341,7 +394,7 @@ void mouseClicked() {
     mode = REGLAS_MENU;
   }
 
-  if (mode==REGLAS_MENU&&mouseX>=width/2+150 && mouseX<=width/2+300 && mouseY>=height/2 && mouseY<=height/2+70) {
+  if (mode==REGLAS_MENU&&mouseX>=width/2-75 && mouseX<=width/2+75 && mouseY>=height/2+155 && mouseY<=height/2+200) {
     if (!isCalibrated) {
       mode = CALIBRATE;
     } else {
@@ -360,25 +413,31 @@ void mouseClicked() {
   }
 }
 
-private void detectFaces() {
+private void detectFaces(int xEar, int yEar, int posOriginX, int posOriginY) {
   //Detección de puntos fiduciales
   ArrayList<MatOfPoint2f> shapes = detectFacemarks(cam);
-
+  int maxFaceValue = -1;
+  int maxFaceIndex = -1;
+  int currentFaceValue;
+  int index = 0;
   if (shapes.size() > 0) {
-    Point [] face = shapes.get(0).toArray();
-
-    PVector origin = new PVector(0, 0);
+    PVector origin = new PVector(posOriginX, posOriginY);
     for (MatOfPoint2f sh : shapes) {
       Point [] pts = sh.toArray();
-      drawFacemarks(pts, origin);
-      break;
+      currentFaceValue = (int)dist((float)pts[0].x, (float)pts[0].y, (float)pts[16].x, (float)pts[16].y);
+      if (currentFaceValue > maxFaceValue) {
+        maxFaceValue = currentFaceValue;
+        maxFaceIndex = index;
+      }
+      index++;
     }
+    Point [] face = shapes.get(maxFaceIndex).toArray();
+    drawFacemarks(face, origin);
     //background(255);
     //PImage newImage = cam.get();
     //newImage.save("outputImage.jpg");
     Point [] rightEyePts = Arrays.copyOfRange(face, 36, 42);
     rightEye = new Element(rightEyePts);
-    //println(rightEye.getEAR());
     Point [] leftEyePts = Arrays.copyOfRange(face, 42, 48);
     leftEye = new Element(leftEyePts);
     Point [] mouthPts = new Point [6];
@@ -392,9 +451,9 @@ private void detectFaces() {
     mouth = new Element(mouthPts);
     fill(255, 0, 0);
     textSize(20);
-    text("Right EAR " + rightEye.getEAR(), 30, 420 );
-    text("Left EAR " + leftEye.getEAR(), 30, 450 );
-    text("Mouth EAR " + mouth.getEAR(), 30, 480 );
+    text("Right EAR " + rightEye.getEAR(), xEar, yEar );
+    text("Left EAR " + leftEye.getEAR(), xEar, yEar+30 );
+    text("Mouth EAR " + mouth.getEAR(), xEar, yEar+60 );
   }
 }
 
@@ -415,6 +474,7 @@ private void drawFacemarks(Point [] p, PVector o) {
   noStroke();
   fill(255);
   for (Point pt : p) {
+    // change the flat values with the position of the cam
     ellipse((float)pt.x+o.x, (float)pt.y+o.y, 3, 3);
   }
   popStyle();
@@ -422,7 +482,6 @@ private void drawFacemarks(Point [] p, PVector o) {
 
 public void visualizeGame() {
   if (cam.available()) {
-    //background(255);
     cam.read();
   }
 
@@ -461,6 +520,11 @@ public void visualizeGame() {
       }
     } else {
       noFill();
+    }
+    // Border of the selected gesture
+    if (selectedGesture == i+1) {
+      fill(0);
+      rect(112+i*110, 547, 86, 86);
     }
     image(images[i], 115+i*110, 550);
     if (buttonAct[i]) {
