@@ -34,20 +34,30 @@ public class Gesture {
     if (diff==2) return 2;
     return 3;
   }
+  
+  public int[] setGestures(int[] answer, int[] attempt){
+    dailyGesture = answer;
+    return checkGesture(attempt);
+  }
 
   // Function which evaluates a try, if an action is in correct position(1), in another position(2) or incorrect action(0)
   public int[] checkGesture(int[] gestureTry) {
     int[] res=new int[3];
+    int[] dailyGestureCopy = dailyGesture;
+
+    // Loop that checks corrects
     for (int i=0; i<3; i++) {
-      if (gestureTry[i]==dailyGesture[i]) {
-        res[i]=1;
-      }else{
-        for (int j=0; j<3; j++) {
-          if (gestureTry[i]==dailyGesture[j] && j!=i) {
-            res[i]=2;
-          } else if(j>2){
-            res[i]=0;
-          }
+      if (gestureTry[i]==dailyGestureCopy[i]) {
+        res[i] = 1;
+        dailyGestureCopy[i] = -1;
+      }
+    }
+
+    for (int i=0; i<3; i++) {
+      for (int j=0; j<3; j++) {
+        if (gestureTry[i] == dailyGestureCopy[j] && j!=i) {
+          res[i] = 2;
+          dailyGestureCopy[j] = -1;
         }
       }
     }

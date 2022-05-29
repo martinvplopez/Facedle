@@ -82,7 +82,10 @@ void setup() {
   mode=PRINCIPAL_MENU;
 
   gesture = new Gesture(1);
-  dailyGesture = gesture.getDailyGesture();
+  int[] data1 = { 4, 4, 3 };
+  int[] data2 = { 3, 2, 3 };
+  dailyGesture = gesture.setGestures(data1, data2);
+  //dailyGesture = gesture.getDailyGesture();
   for (int i=0; i<3; i++) {
     println(dailyGesture[i]+" ");
   }
@@ -168,49 +171,8 @@ void reglas() {
 }
 
 void game() {
-  if (cam.available()) {
-    //background(255);
-    cam.read();
-  }
+  visualizeGame();
 
-  textAlign(LEFT);
-  stroke(0);
-  fill(80);
-  textSize(50);
-  text("Facedle!", 30, 60);
-
-  //boton configuración
-  image(config, 935, 25);
-
-  //boton ayuda
-  image(help, 1000, 25);
-
-  //Rectangles
-  fill(200);
-  rect(450, 90, 600, 400);
-
-  for (int i=0; i<3; i++) {
-    for (int j=0; j<3; j++) {
-      rect(510+i*180, 100+j*130, 120, 120);
-    }
-  }
-
-  noFill();
-  rect(90, 540, 900, 100);
-
-  for (int i=0; i<8; i++) {
-    image(images[i], 115+i*110, 550);
-    if (buttonAct[i]) {
-    }
-  }
-
-  //Get image from cam
-  img.copy(cam, 0, 0, cam.width, cam.height, 
-    0, 0, img.width, img.height);
-  img.copyTo();
-
-  //Imagen de entrada
-  image(img, 30, 90);
   //Detección de puntos fiduciales
   ArrayList<MatOfPoint2f> shapes = detectFacemarks(cam);
 
@@ -290,76 +252,14 @@ void game() {
 }
 
 void game_settings() {
-  if (cam.available()) {
-    cam.read();
-  }
-
-  textAlign(LEFT);
-  stroke(0);
-  fill(80);
-  textSize(50);
-  text("Facedle!", 30, 60);
-
-  //boton configuración
-  image(config, 935, 25);
-
-  //boton ayuda
-  image(help, 1000, 25);
-
-  //Rectangles
-  fill(200);
-  rect(450, 90, 600, 400);
-
-  for (int i=0; i<3; i++) {
-    for (int j=0; j<3; j++) {
-      rect(510+i*180, 100+j*130, 120, 120);
-    }
-  }
-
-  noFill();
-  rect(90, 540, 900, 100);
-
-  for (int i=0; i<8; i++) {
-    image(images[i], 115+i*110, 550);
-    if (buttonAct[i]) {
-    }
-  }
-
-  //Get image from cam
-  img.copy(cam, 0, 0, cam.width, cam.height, 
-    0, 0, img.width, img.height);
-  img.copyTo();
-
-  //Imagen de entrada
-  image(img, 30, 90);
+  visualizeGame();
 
   //menú de ayuda
   fill(255);
-  rect(width/2-250, 120, 500, 370);
-  
+  rect(width/2-250, 150, 500, 370);
   fill(100);
-  textSize(17);
-  text("Hard mode\nDo you dare with two tries?", width/2-200, 200);
-  if (mouseX>=width/2+100 && mouseX<=width/2+200 && mouseY>=185 && mouseY<=225) {
-    fill(80, 200, 120);
-  } else {
-    noFill();
-  }
-  rect(width/2+100, 185, 100, 40, 100);
-  fill(0);
-  text("Accept", width/2+123, 210);
-  
-  fill(100);
-  textSize(17);
-  text("Do you want to start a new game?", width/2-200, 320);
-  if (mouseX>=width/2+100 && mouseX<=width/2+200 && mouseY>=300 && mouseY<=340) {
-    fill(80, 200, 120);
-  } else {
-    noFill();
-  }
-  rect(width/2+100, 300, 100, 40, 100);
-  fill(0);
-  text("Reset", width/2+128, 325);
+  textSize(12);
+  text("Hard mode\n Do you dare with two tries?", width/2-100, 200);
 
   //sale de la configuración
   if (mousePressed &&(mouseX<=width/2-250 || mouseX>=width/2+250 || mouseY<=150 || mouseY>=520)) {
@@ -496,11 +396,11 @@ void mouseClicked() {
   if (mode==PRINCIPAL_MENU&&mouseX>=width/2+50 && mouseX<=width/2+200 && mouseY>=height/2 && mouseY<=height/2+70) {
     mode = REGLAS_MENU;
   }
-  //entra en configuracion
+  //activa la configuracion
   if (mode==GAME_UI&&mouseX>=935 && mouseX<=975 && mouseY>=25 && mouseY<=65) {
     mode = GAME_SETTINGS;
   }
-  //entra en reglas
+
   if (mode==GAME_UI&&mouseX>=1000 && mouseX<=1040 && mouseY>=25 && mouseY<=65) {
     mode = REGLAS_MENU;
   }
@@ -544,4 +444,61 @@ private void drawFacemarks(Point [] p, PVector o) {
     ellipse((float)pt.x+o.x, (float)pt.y+o.y, 3, 3);
   }
   popStyle();
+}
+
+public void visualizeGame() {
+  if (cam.available()) {
+    //background(255);
+    cam.read();
+  }
+
+  textAlign(LEFT);
+  stroke(0);
+  fill(80);
+  textSize(50);
+  text("Facedle!", 30, 60);
+
+  //Rectangles
+  fill(200);
+  rect(450, 90, 600, 400);
+
+  fill(250);
+
+  //boton configuración
+  image(config, 935, 25);
+
+  //boton ayuda
+  image(help, 1000, 25);
+
+  for (int i=0; i<3; i++) {
+    for (int j=0; j<3; j++) {
+      rect(510+i*180, 100+j*130, 120, 120);
+    }
+  }
+
+  rect(90, 540, 900, 100);
+
+  for (int i=0; i<8; i++) {
+    // hover of the faces
+    if (mouseX>=115+i*110 && mouseX<=115+80+i*110 && mouseY>=550 && mouseY<=550+80) {
+      if (mode == GAME_UI) {
+        fill(200);
+        rect(112+i*110, 547, 86, 86);
+      }
+    } else {
+      noFill();
+    }
+    image(images[i], 115+i*110, 550);
+    if (buttonAct[i]) {
+    }
+  }
+  //Get image from cam
+  img.copy(cam, 0, 0, cam.width, cam.height, 
+    0, 0, img.width, img.height);
+  img.copyTo();
+
+  //Imagen de entrada
+  fill(0);
+  rect(30, 90, 410, 310);
+  image(img, 35, 95);
 }
