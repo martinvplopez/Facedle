@@ -62,8 +62,10 @@ PImage[] faceImages = new PImage[9];
 PImage validatedFace;
 int contImages = 0;
 
-SoundFile music, click;
-int sinuFreq = 0, musicAmp = 5;
+SoundFile music;
+int musicAmp = 5;
+SinOsc osc;
+Env env;
 
 void setup() {
   size(1080, 700);
@@ -111,11 +113,11 @@ void setup() {
 
   //sonido
   music = new SoundFile(this, "sounds/music.mp3");
-  click = new SoundFile(this, "sounds/click.wav");
   //establezco el volumen por defecto
   music.amp(map(musicAmp, 0, 15, 0, 1));
-  click.amp(map(musicAmp, 0, 15, 0, 1));
   music.play();
+  osc = new SinOsc(this);
+  env  = new Env(this);
 }
 
 void draw() {
@@ -399,6 +401,9 @@ void calibrate() {
   if (keyPressed && key==' ') {
     switch(secuencial) {
     case 1:
+      osc.play((pow(2, ((61-69)/12.0))) * 440, 0.5);
+      env.play(osc, 0.001, 0.004, 0.5, 0.4);
+
       int rightEyeOpen = rightEye.getEAR();
       int leftEyeOpen = leftEye.getEAR();
       eyesOpen = (rightEyeOpen + leftEyeOpen) / 2;
@@ -407,6 +412,9 @@ void calibrate() {
       secuencial++;
       break;
     case 2:
+      osc.play((pow(2, ((61-69)/12.0))) * 440, 0.5);
+      env.play(osc, 0.001, 0.004, 0.5, 0.4);
+
       int rightEyeClose = rightEye.getEAR();
       int leftEyeClose = leftEye.getEAR();
       eyesClose = (rightEyeClose + leftEyeClose) / 2;
@@ -415,6 +423,9 @@ void calibrate() {
       secuencial++;
       break;
     case 3:
+      osc.play((pow(2, ((61-69)/12.0))) * 440, 0.5);
+      env.play(osc, 0.001, 0.004, 0.5, 0.4);
+
       calibration = new Player(mouthOpen, mouthClose, eyesOpen, eyesClose);
       isCalibrated = true;
       mode=GAME_UI;
@@ -426,21 +437,26 @@ void calibrate() {
 
 void mouseClicked() {
   if (mode==PRINCIPAL_MENU&&mouseX>=width/2-200 && mouseX<=width/2-50 && mouseY>=height/2 && mouseY<=height/2+70) {
+    clickSound();
     mode = CALIBRATE;
   }
   if (mode==PRINCIPAL_MENU&&mouseX>=width/2+50 && mouseX<=width/2+200 && mouseY>=height/2 && mouseY<=height/2+70) {
+    clickSound();
     mode = REGLAS_MENU;
   }
   //activa la configuracion
   if (mode==GAME_UI&&mouseX>=935 && mouseX<=975 && mouseY>=25 && mouseY<=65) {
+    clickSound();
     mode = GAME_SETTINGS;
   }
 
   if (mode==GAME_UI&&mouseX>=1000 && mouseX<=1040 && mouseY>=25 && mouseY<=65) {
+    clickSound();
     mode = REGLAS_MENU;
   }
 
   if (mode==REGLAS_MENU&&mouseX>=width/2-75 && mouseX<=width/2+75 && mouseY>=height/2+205 && mouseY<=height/2+250) {
+    clickSound();
     if (!isCalibrated) {
       mode = CALIBRATE;
     } else {
@@ -451,6 +467,7 @@ void mouseClicked() {
   if (mode==GAME_UI) {
     for (int i=0; i<8; i++) {
       if (mouseX>=115+i*110 && mouseX<=115+i*110+80 && mouseY>=550 && mouseY<=630) {
+        clickSound();
         selectedGesture = i+1;
         println("Selected:"+selectedGesture);
         newSelection = false;
@@ -587,19 +604,21 @@ public void visualizeGame() {
   image(img, 35, 95);
 }
 
-
 void keyPressed() {
   if (key == '+') {
     //aumenta el volumen de la música
     if (musicAmp < 15)
       musicAmp++;
     music.amp(map(musicAmp, 0, 15, 0, 1));
-    click.amp(map(musicAmp, 0, 15, 0, 1));
   } else if (key == '-') {
     //disminuye el volumen de la música
     if (musicAmp > 0)
       musicAmp--;
     music.amp(map(musicAmp, 0, 15, 0, 1));
-    click.amp(map(musicAmp, 0, 15, 0, 1));
   }
+}
+
+void clickSound() {
+  osc.play((pow(2, ((67-69)/12.0))) * 440, 0.5);
+  env.play(osc, 0.001, 0.004, 0.5, 0.4);
 }
