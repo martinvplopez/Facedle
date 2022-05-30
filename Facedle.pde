@@ -7,8 +7,8 @@ import org.opencv.objdetect.CascadeClassifier;
 //Máscara del rostro
 import org.opencv.face.Face;
 import org.opencv.face.Facemark;
-
 import java.util.Arrays;
+import processing.sound.*;
 
 int mode;
 int secuencial;
@@ -62,6 +62,9 @@ PImage[] faceImages = new PImage[9];
 PImage validatedFace;
 int contImages = 0;
 
+SoundFile music, click;
+int sinuFreq = 0, musicAmp = 5;
+
 void setup() {
   size(1080, 700);
   secuencial = 1;
@@ -105,6 +108,14 @@ void setup() {
   possibleTries=gesture.getTries();
   selectedGesture=-1;
   numSelected=0;
+
+  //sonido
+  music = new SoundFile(this, "sounds/music.mp3");
+  click = new SoundFile(this, "sounds/click.wav");
+  //establezco el volumen por defecto
+  music.amp(map(musicAmp, 0, 15, 0, 1));
+  click.amp(map(musicAmp, 0, 15, 0, 1));
+  music.play();
 }
 
 void draw() {
@@ -296,6 +307,16 @@ void game_settings() {
   //text("You will get another face!\nOnly possible on demo!", width/2-155, 350);
   textSize(23);
   text("Volver al MENU", width/2+40, 300);
+
+  text("Volumen:", width/2-200, 450);
+  //dibuja el volumen
+  noStroke();
+  for (int i = 0; i < musicAmp; i++) {
+    rect(width/2-70+i*8, 430, 4, 20);
+  }
+  stroke(0);
+  noFill();
+  rect(width/2-75, 425, 126, 30);
 
   //sale de la configuración
   if (mousePressed &&(mouseX<=width/2-250 || mouseX>=width/2+250 || mouseY<=150 || mouseY>=520)) {
@@ -564,4 +585,21 @@ public void visualizeGame() {
   fill(0);
   rect(30, 90, 410, 310);
   image(img, 35, 95);
+}
+
+
+void keyPressed() {
+  if (key == '+') {
+    //aumenta el volumen de la música
+    if (musicAmp < 15)
+      musicAmp++;
+    music.amp(map(musicAmp, 0, 15, 0, 1));
+    click.amp(map(musicAmp, 0, 15, 0, 1));
+  } else if (key == '-') {
+    //disminuye el volumen de la música
+    if (musicAmp > 0)
+      musicAmp--;
+    music.amp(map(musicAmp, 0, 15, 0, 1));
+    click.amp(map(musicAmp, 0, 15, 0, 1));
+  }
 }
