@@ -47,6 +47,9 @@ Player calibration;
 Gesture gesture;
 int[] dailyGesture;
 
+//Array of the tint for each faceButtom 
+int[] buttomColors = new int[8];
+
 Element rightEye, leftEye, mouth;
 
 int tryNum;
@@ -79,6 +82,8 @@ void setup() {
   x = loadImage("images/x.png");
   tick = loadImage("images/tick.png");
 
+
+
   cam = new Capture(this, CAPW, CAPH);
   cam.start();
 
@@ -98,8 +103,8 @@ void setup() {
   mode=PRINCIPAL_MENU;
 
   gesture = new Gesture(1);
-  int[] data1 = { 4, 4, 3 };
-  int[] data2 = { 3, 2, 3 };
+  int[] data1 = { 2, 3, 1 };
+  int[] data2 = { 2, 4, 1 };
   dailyGesture = gesture.setGestures(data1, data2);
   //dailyGesture = gesture.getDailyGesture();
   for (int i=0; i<3; i++) {
@@ -258,12 +263,15 @@ void game() {
     }
     if (numSelected==3) {
       tryNum++;
+      int[] actualTryCopy= new int[3];
       print("Actual try:");
       for (int i=0; i<3; i++) {
         print(actualTry[i]+" ");
+        actualTryCopy[i] = actualTry[i];
       }
+
       print("Results:");
-      int []test=gesture.checkGesture(actualTry);
+      int []test=gesture.checkGesture(actualTryCopy);
       int count=0;
       for (int i=0; i<3; i++) {
         if (test[i]==1) {
@@ -274,6 +282,19 @@ void game() {
       if (count==3) {
         println("RESPUESTA CORRECTA!");
       }
+
+      for (int i=0; i<3; i++) {
+        if (test[i] == 1) buttomColors[(actualTry[i])-1] = 2;
+        if (buttomColors[actualTry[i]-1] < test[i]+1 && buttomColors[actualTry[i]-1] != 2) {
+          buttomColors[(actualTry[i])-1] = test[i]+1;
+        }
+      }
+      println("---");
+      for (int n = 0; n < 8; n++) {
+        print(buttomColors[n]);
+      }
+      println("");
+      println("---");
       numSelected=0;
     }
   }
@@ -297,28 +318,28 @@ void game_settings() {
   text("AJUSTES", width/2-60, 195);
 
 
-  if (mouseX>=width/2-180 && mouseX<=width/2-55 && mouseY>=250 && mouseY<=330) fill(51, 173, 189);
+  if (mouseX>=width/2-180 && mouseX<=width/2-55 && mouseY>=412 && mouseY<=472) fill(51, 173, 189);
   else noFill();
-  rect(width/2-180, 250, 125, 80);
-  if (mouseX>=width/2+25 && mouseX<=width/2+195 && mouseY>=250 && mouseY<=330) fill(255, 0, 0);
+  rect(width/2-180, 412, 125, 60, 45);
+  if (mouseX>=width/2 && mouseX<=width/2+195 && mouseY>=412 && mouseY<=472) fill(255, 0, 0);
   else noFill();
-  rect(width/2+25, 250, 170, 80);
+  rect(width/2, 412, 195, 60, 45);
   fill(100);
   textSize(23);
-  text("Resetear", width/2-161, 300);
+  text("Resetear", width/2-161, 450);
   //text("You will get another face!\nOnly possible on demo!", width/2-155, 350);
   textSize(23);
-  text("Volver al MENU", width/2+40, 300);
+  text("Volver al MENU", width/2+15, 450);
 
-  text("Volumen:", width/2-200, 450);
+  text("Volumen:", width/2-150, 298);
   //dibuja el volumen
   noStroke();
   for (int i = 0; i < musicAmp; i++) {
-    rect(width/2-70+i*8, 430, 4, 20);
+    rect(width/2-20+i*8, 280, 4, 20);
   }
   stroke(0);
   noFill();
-  rect(width/2-75, 425, 126, 30);
+  rect(width/2-25, 275, 190, 30);
 
   //sale de la configuración
   if (mousePressed &&(mouseX<=width/2-250 || mouseX>=width/2+250 || mouseY<=150 || mouseY>=520)) {
@@ -455,6 +476,20 @@ void mouseClicked() {
     mode = REGLAS_MENU;
   }
 
+  //return to main menu
+  if (mode==GAME_SETTINGS&&mouseX>=width/2 && mouseX<=width/2+195 && mouseY>=412 && mouseY<=472) {
+    clickSound();
+    reset();
+    mode = PRINCIPAL_MENU;
+  }
+
+  //reset
+  if (mode==GAME_SETTINGS&&mouseX>=width/2-180 && mouseX<=width/2-55 && mouseY>=412 && mouseY<=472) {
+    clickSound();
+    reset();
+    mode = GAME_UI;
+  }
+
   if (mode==REGLAS_MENU&&mouseX>=width/2-75 && mouseX<=width/2+75 && mouseY>=height/2+205 && mouseY<=height/2+250) {
     clickSound();
     if (!isCalibrated) {
@@ -589,9 +624,13 @@ public void visualizeGame() {
       fill(0);
       rect(112+i*110, 547, 86, 86);
     }
+    if (buttomColors[i] == 2) tint(100, 255, 0);
+    else if (buttomColors[i] == 3) tint(255, 255, 0);
+    else if (buttomColors[i] == 1) tint(128, 128, 128);
+
     image(images[i], 115+i*110, 550);
-    if (buttonAct[i]) {
-    }
+
+    noTint();
   }
   //Get image from cam
   img.copy(cam, 0, 0, cam.width, cam.height, 
@@ -602,6 +641,21 @@ public void visualizeGame() {
   fill(0);
   rect(30, 90, 410, 310);
   image(img, 35, 95);
+}
+
+void reset() {
+  secuencial = 1;
+  tryNum = 0;
+  contImages = 0;
+  selectedGesture=-1;
+  numSelected = 0;
+  newSelection = true;
+
+  Arrays.fill(faceImages, null);
+  Arrays.fill(buttomColors, -1);
+
+  //new dailyGesture
+  dailyGesture = gesture.getDailyGesture();
 }
 
 void keyPressed() {
