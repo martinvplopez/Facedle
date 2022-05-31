@@ -104,10 +104,7 @@ void setup() {
   mode=PRINCIPAL_MENU;
 
   gesture = new Gesture(1);
-  int[] data1 = { 2, 3, 1 };
-  int[] data2 = { 2, 4, 1 };
-  dailyGesture = gesture.setGestures(data1, data2);
-  //dailyGesture = gesture.getDailyGesture();
+  dailyGesture = gesture.getDailyGesture();
   for (int i=0; i<3; i++) {
     println(dailyGesture[i]+" ");
   }
