@@ -34,29 +34,19 @@ void main(){
     st.x*=u_resolution.x/u_resolution.y;
     // Translation animation
     float c;
-
-    /*vec2 translate = vec2(cos(u_time*u_time*2.2),sin(u_time*u_time*2.2));
-    st += translate*0.05;
-    if(u_time<5.){
-        c= circle(st,vec2(.0, .0), .4-u_time/40.);
-    }else{
-        c= circle(st,vec2(.0, .0), .4);
-    }
-    c -= circle(st,vec2(-.15, .2), .1);
-    float tRightEye=sin(u_time*3.)/10.;
-    c -= circle(st,vec2(.15, .2), .1);
-    c -= circle(st,vec2(.0, -.175), .2);
-    vec2 pos=vec2(st.x+0.35,st.y+0.3);*/
-
     vec2 translate = vec2(0.6*cos(u_time*u_time*10.),0.6*sin(u_time*u_time*10.)); // variar la amplitud de la señal para controlar desenfoque
     st += translate*0.05;
     c= circle(st,vec2(.0, .0), .4);
+    // Inner elements rotation
     st = rotate2d( sin(u_time)*PI*2.) * st;
+    // Left Eye
     c -= circle(st,vec2(-.15, .2), .1);
-   // float tRightEye=sin(u_time*3.)/10.;
-    //c -= circle(st,vec2(.15, .2), .1);
+    // Mouth
     c -= circle(st,vec2(.0, -.175), .2);
+    // Right eye morphing from closed to opened
+    c -= circle(st,vec2(.15, .2), sin(u_time*2.)-0.9);
     vec2 pos=vec2(st.x+0.35,st.y+0.3);
-    c-=rect(pos, vec2(sin(u_time)-0.7,0.1));
+    c-=rect(pos, vec2(sin(u_time)-0.7,.1));
+    
 	gl_FragColor = vec4(vec3(c), 1.0);
 }
