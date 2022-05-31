@@ -354,16 +354,17 @@ void game_settings() {
 }
 
 void calibrationHelp() {
-  fill(51, 173, 189);
-  textSize(30);
-  text("CALIBRACIÓN:", 25, 450 );
+  textAlign(CENTER);
+  fill(0);
+  textSize(50);
+  text("Calibración", width/2, 125);
   textSize(25);
-  text("IMITA LAS SIGUIENTES CARAS", 25, 490 );
+  text("IMITA LAS SIGUIENTES CARAS", width/2, 500 );
   textSize(18);
-  text("PULSA ESPACIO PARA CONFIRMAR", width/2-125, 415);
+  text("PULSA ESPACIO PARA CONFIRMAR", width/2, 640);
   noFill();
-  rect(width/2-95, 460, 86, 86);
-  rect(width/2, 460, 86, 86);
+  rect(width/2-95, 520, 86, 86);
+  rect(width/2, 520, 86, 86);
 }
 
 void calibrate() {
@@ -382,40 +383,42 @@ void calibrate() {
   img.copyTo();
 
   //Imagen de entrada
-  image(img, width/2-cam.width/2, 90);
+  fill(0);
+  rect(width/2-cam.width/2 - 5, 150, 410, 310);
+  image(img, width/2-cam.width/2, 155);
 
-  detectFaces(width/2+cam.width/2, cam.height, width/2-cam.width/2, 90);
+  detectFaces(width/2+cam.width/2+10, cam.height, width/2-cam.width/2, 155);
   //progress bar
   noFill();
   strokeWeight(1.5);
-  rect(410, 600, 250, 30, 50);
+  rect(410, 650, 250, 30, 50);
   switch(secuencial) {
   case 1:
     break;
   case 2:
     fill(51, 173, 189);
-    rect(410, 600, 125, 30, 50);
+    rect(410, 650, 125, 30, 50);
     break;
   case 3:
     fill(51, 173, 189);
-    rect(410, 600, 250, 30, 50);
+    rect(410, 650, 250, 30, 50);
     break;
   }
 
   switch(secuencial) {
   case 1:
     calibrationHelp();
-    image(images[7], width/2-92, 463);
+    image(images[7], width/2-92, 523);
     tint(255, 80);
-    image(images[0], width/2+3, 463);
+    image(images[0], width/2+3, 523);
     tint(255, 255);
     break;
   case 2:
     calibrationHelp();
     tint(255, 80);
-    image(images[7], width/2-92, 463);
+    image(images[7], width/2-92, 523);
     tint(255, 255);
-    image(images[0], width/2+3, 463);
+    image(images[0], width/2+3, 523);
     break;
   case 3:
     fill(51, 173, 189);
