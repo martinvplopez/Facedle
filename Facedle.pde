@@ -14,7 +14,7 @@ int mode;
 int secuencial;
 
 boolean newSelection;
-boolean victory;
+int victory = 0;
 
 final int PRINCIPAL_MENU=1;
 final int REGLAS_MENU=2;
@@ -73,9 +73,6 @@ int musicAmp = 5;
 SinOsc osc;
 Env env;
 
-PShape square;
-PShader circle;
-
 void setup() {
   size(1080, 700);
   secuencial = 1;
@@ -105,9 +102,6 @@ void setup() {
   fm.loadModel(dataPath(modelFile));
 
   mode=PRINCIPAL_MENU;
-
-  square = createShape(RECT, 50, 50, 100, 100);
-  circle= loadShader("Facedle.glsl");
 
   gesture = new Gesture(1);
   int[] data1 = { 2, 3, 1 };
@@ -167,12 +161,6 @@ void principal() {
   textSize(28);
   strokeWeight(1.5);
 
-  circle.set("u_resolution", float(width), float(height));
-  circle.set("u_time", millis() / 1000.0);
-  shader(circle);
-  shape(square);
-  resetShader();
-
   //boton jugar
   if (mouseX>=width/2-200 && mouseX<=width/2-50 && mouseY>=height/2 && mouseY<=height/2+70) {
     fill(51, 173, 189);
@@ -207,7 +195,7 @@ void reglas() {
 
   // List of the rules of the game
   textSize(35);
-  text("- Tienes que adivinar 3 gestos", width/2, 200);
+  text("- Tienes que adivinar una secuencia de 3 gestos", width/2, 200);
   text("- Los gestos pueden repetirse", width/2, 250);
   text("- Los gestos contiguos solo tienen UNA diferencia", width/2, 300);
   image(images[7], width/2 - 340, 350);
@@ -259,8 +247,7 @@ void game() {
 
 
   if (tryNum==3) {
-    victory = false;
-    mode = GAME_END;
+    victory = 1; //game over
   } else {
     if (keyPressed && key==' ') {
       // If there has gesture been clicked and there are max clicks, get the try and evaluate it
@@ -297,8 +284,7 @@ void game() {
 
 
       if (count==3) {
-        victory = true;
-        mode = GAME_END;
+        victory = 2; //winner
       }
 
       for (int i=0; i<3; i++) {
@@ -311,6 +297,13 @@ void game() {
       numSelected=0;
     }
   }
+  if (victory != 0) {
+    if (keyPressed && key==' ') {
+      mode = GAME_END;
+    }
+  }
+
+
   //println(calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR()));
   if (!newSelection) {
     if (selectedGesture != -1 && calibration.checkMatchingGesture(selectedGesture, leftEye.getEAR(), rightEye.getEAR(), mouth.getEAR())) {
@@ -662,12 +655,12 @@ public void visualizeGame() {
   image(img, 35, 95);
 }
 
-void gameEnd(boolean win) {
+void gameEnd(int win) {
   textAlign(CENTER);
   stroke(0);
   fill(80);
   textSize(70);
-  if (win) {
+  if (win == 2) {
     text("¡VICTORIA!", width/2, 200);
     textSize(40);
     text("¡Vuelve mañana a por más gestos!", width/2, 300);
@@ -697,6 +690,7 @@ void reset() {
   selectedGesture=-1;
   numSelected = 0;
   newSelection = true;
+  victory = 0;
 
   Arrays.fill(faceImages, null);
   Arrays.fill(buttomColors, -1);

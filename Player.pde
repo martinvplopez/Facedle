@@ -11,12 +11,13 @@ public class Player {
     eyeClosed = eyesClose;
 
     mouthThreshold = (int)((mouthOpened - mouthClosed)*0.2);
-    eyesThreshold = (int)((eyeOpened - eyeClosed)*0.1); //Error of 10%
+    eyesThreshold = (int)((eyeOpened - eyeClosed)*0.01); //Error of 10%
   }
 
   private boolean isOpen(float value, float openValue, float threshold) {
     //Checks if the value its within the expected error
-    if (value < openValue + threshold && value > openValue - threshold) {
+    //value < openValue + threshold && 
+    if (value > openValue - threshold) {
       return true; //OPEN
     }
     //println("Value:"+value+" Open:"+openValue+" Threshold:"+threshold);
