@@ -104,6 +104,9 @@ void setup() {
   mode=PRINCIPAL_MENU;
 
   gesture = new Gesture(1);
+  //int[] data1 = { 2, 3, 1 };
+  //int[] data2 = { 2, 4, 1 };
+  //dailyGesture = gesture.setGestures(data1, data2);
   dailyGesture = gesture.getDailyGesture();
   for (int i=0; i<3; i++) {
     println(dailyGesture[i]+" ");
@@ -380,7 +383,7 @@ void calibrate() {
   img.copyTo();
 
   //Imagen de entrada
-  fill(0);
+  fill(51, 173, 189);
   rect(width/2-cam.width/2 - 5, 150, 410, 310);
   image(img, width/2-cam.width/2, 155);
 
@@ -418,11 +421,12 @@ void calibrate() {
     image(images[0], width/2+3, 523);
     break;
   case 3:
-    fill(51, 173, 189);
+    textAlign(CENTER);
+    fill(0);
     textSize(30);
-    text("¡INCREÍBLE, ESTÁS PREPARADO!", width/2-200, 463 );
+    text("¡INCREÍBLE, ESTÁS PREPARADO!", width/2, 500 );
     textSize(20);
-    text("PULSA ESPACIO PARA EMPEZAR", width/2-125, 415);
+    text("PULSA ESPACIO PARA EMPEZAR", width/2, 640);
     break;
   }
   if (keyPressed && key==' ') {
