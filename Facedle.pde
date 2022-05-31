@@ -14,12 +14,14 @@ int mode;
 int secuencial;
 
 boolean newSelection;
+boolean victory;
 
 final int PRINCIPAL_MENU=1;
 final int REGLAS_MENU=2;
 final int GAME_UI=3;
 final int GAME_SETTINGS=4;
 final int CALIBRATE=5;
+final int GAME_END=6;
 
 final int CAPW = 400;
 final int CAPH = 300;
@@ -49,6 +51,7 @@ int[] dailyGesture;
 
 //Array of the tint for each faceButtom 
 int[] buttomColors = new int[8];
+int[] facesColors = new int[9];
 
 Element rightEye, leftEye, mouth;
 
@@ -70,6 +73,9 @@ int musicAmp = 5;
 SinOsc osc;
 Env env;
 
+PShape square;
+PShader circle;
+
 void setup() {
   size(1080, 700);
   secuencial = 1;
@@ -81,8 +87,6 @@ void setup() {
   help = loadImage("images/help.png");
   x = loadImage("images/x.png");
   tick = loadImage("images/tick.png");
-
-
 
   cam = new Capture(this, CAPW, CAPH);
   cam.start();
@@ -101,6 +105,9 @@ void setup() {
   fm.loadModel(dataPath(modelFile));
 
   mode=PRINCIPAL_MENU;
+
+  square = createShape(RECT, 50, 50, 100, 100);
+  circle= loadShader("Facedle.glsl");
 
   gesture = new Gesture(1);
   int[] data1 = { 2, 3, 1 };
@@ -143,6 +150,9 @@ void draw() {
   case CALIBRATE:
     calibrate();
     break;
+  case GAME_END:
+    gameEnd(victory);
+    break;
   }
 }
 
@@ -157,9 +167,15 @@ void principal() {
   textSize(28);
   strokeWeight(1.5);
 
+  circle.set("u_resolution", float(width), float(height));
+  circle.set("u_time", millis() / 1000.0);
+  shader(circle);
+  shape(square);
+  resetShader();
+
   //boton jugar
   if (mouseX>=width/2-200 && mouseX<=width/2-50 && mouseY>=height/2 && mouseY<=height/2+70) {
-    fill(80, 200, 120);
+    fill(51, 173, 189);
   } else {
     noFill();
   }
@@ -169,7 +185,7 @@ void principal() {
 
   //boton reglas
   if (mouseX>=width/2+50 && mouseX<=width/2+200 && mouseY>=height/2 && mouseY<=height/2+70) {
-    fill(80, 200, 120);
+    fill(51, 173, 189);
   } else {
     noFill();
   }
@@ -204,7 +220,7 @@ void reglas() {
 
   //boton empezar
   if (mouseX>=width/2-75 && mouseX<=width/2+75 && mouseY>=height/2+205 && mouseY<=height/2+250) {
-    fill(80, 200, 120);
+    fill(51, 173, 189);
   } else {
     noFill();
   }
@@ -227,26 +243,24 @@ void game() {
   text("Mouth EAR " + mouth.getEAR(), 30, 480 );
 
   //Muestra las fotos de las caras
+
+
   for (int i=0; i<3; i++) {
-    if (faceImages[i]!=null) {
-      image(faceImages[i], 510, 100+130*i);
+    for (int j=0; j<3; j++) {
+      if (faceImages[j+3*i]!=null) {
+        if (facesColors[j+3*i] == 2) tint(100, 255, 0);
+        else if (facesColors[j+3*i] == 3) tint(255, 255, 0);
+        else if (facesColors[j+3*i] == 1) tint(128, 128, 128);
+        image(faceImages[j+3*i], 510+180*i, 100+130*j);
+        noTint();
+      }
     }
   }
 
-  for (int i=0; i<3; i++) {
-    if (faceImages[i+3]!=null) {
-      image(faceImages[i+3], 690, 100+130*i);
-    }
-  }
-
-  for (int i=0; i<3; i++) {
-    if (faceImages[i+6]!=null) {
-      image(faceImages[i+6], 870, 100+130*i);
-    }
-  }
 
   if (tryNum==3) {
-    println("HAN terminado tus intentos...");
+    victory = false;
+    mode = GAME_END;
   } else {
     if (keyPressed && key==' ') {
       // If there has gesture been clicked and there are max clicks, get the try and evaluate it
@@ -279,22 +293,21 @@ void game() {
         }
         print(test[i]+" ");
       }
+
+
+
       if (count==3) {
-        println("RESPUESTA CORRECTA!");
+        victory = true;
+        mode = GAME_END;
       }
 
       for (int i=0; i<3; i++) {
+        facesColors[i+3*(tryNum-1)] = test[i] + 1; 
         if (test[i] == 1) buttomColors[(actualTry[i])-1] = 2;
         if (buttomColors[actualTry[i]-1] < test[i]+1 && buttomColors[actualTry[i]-1] != 2) {
           buttomColors[(actualTry[i])-1] = test[i]+1;
         }
       }
-      println("---");
-      for (int n = 0; n < 8; n++) {
-        print(buttomColors[n]);
-      }
-      println("");
-      println("---");
       numSelected=0;
     }
   }
@@ -387,11 +400,11 @@ void calibrate() {
   case 1:
     break;
   case 2:
-    fill(80, 200, 120);
+    fill(51, 173, 189);
     rect(410, 600, 125, 30, 50);
     break;
   case 3:
-    fill(80, 200, 120);
+    fill(51, 173, 189);
     rect(410, 600, 250, 30, 50);
     break;
   }
@@ -412,7 +425,7 @@ void calibrate() {
     image(images[0], width/2+3, 463);
     break;
   case 3:
-    fill(80, 200, 120);
+    fill(51, 173, 189);
     textSize(30);
     text("¡INCREÍBLE, ESTÁS PREPARADO!", width/2-200, 463 );
     textSize(20);
@@ -497,6 +510,12 @@ void mouseClicked() {
     } else {
       mode = GAME_UI;
     }
+  }
+
+  if (mode==GAME_END&&mouseX>=width/2-110 && mouseX<=width/2+110 && mouseY>=height/2+155 && mouseY<=height/2+375) {
+    clickSound();
+    reset();
+    mode = PRINCIPAL_MENU;
   }
 
   if (mode==GAME_UI) {
@@ -641,6 +660,34 @@ public void visualizeGame() {
   fill(0);
   rect(30, 90, 410, 310);
   image(img, 35, 95);
+}
+
+void gameEnd(boolean win) {
+  textAlign(CENTER);
+  stroke(0);
+  fill(80);
+  textSize(70);
+  if (win) {
+    text("¡VICTORIA!", width/2, 200);
+    textSize(40);
+    text("¡Vuelve mañana a por más gestos!", width/2, 300);
+  } else {
+    text("DERROTA...", width/2, 200);
+    textSize(40);
+    text("¡Más suerte con los gestos de mañana!", width/2, 300);
+  }
+
+  //return to main menu buttom
+  if (mouseX>=width/2-75 && mouseX<=width/2+75 && mouseY>=height/2+155 && mouseY<=height/2+375) {
+    fill(51, 173, 189);
+  } else {
+    noFill();
+  }
+  strokeWeight(1.5);
+  rect(width/2-110, height/2+155, 220, 70, 45);
+  textSize(28);
+  fill(0);
+  text("Volver al Menu", width/2, height/2+200);
 }
 
 void reset() {
