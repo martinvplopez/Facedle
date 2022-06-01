@@ -72,6 +72,8 @@ SoundFile music;
 int musicAmp = 5;
 SinOsc osc;
 Env env;
+int note=0;
+int note2=12;
 
 void setup() {
   size(1080, 700);
@@ -665,10 +667,22 @@ void gameEnd(int win) {
   fill(80);
   textSize(70);
   if (win == 2) {
+    //sonido victoria
+    if (note <= 7) {
+      triOsc.play(pow(2, ((60+note-69)/12.0)) * 440, 0.5);
+      env.play(triOsc, 0.003, 0.2, 0.2, 1.5);
+      note++;
+    }
     text("¡VICTORIA!", width/2, 200);
     textSize(40);
     text("¡Vuelve mañana a por más gestos!", width/2, 300);
   } else {
+    //sonido derrota
+    if (note >= 0) {
+      triOsc.play(pow(2, ((60+note-69)/12.0)) * 440, 0.5);
+      env.play(triOsc, 0.003, 0.2, 0.2, 1.5);
+      note--;
+    }
     text("DERROTA...", width/2, 200);
     textSize(40);
     text("¡Más suerte con los gestos de mañana!", width/2, 300);
