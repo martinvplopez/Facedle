@@ -72,8 +72,7 @@ SoundFile music;
 int musicAmp = 5;
 SinOsc osc;
 Env env;
-int note=0;
-int note2=12;
+int note=0, note2=12;
 
 void setup() {
   size(1080, 700);
@@ -512,6 +511,7 @@ void mouseClicked() {
   }
 
   if (mode==GAME_END&&mouseX>=width/2-110 && mouseX<=width/2+110 && mouseY>=height/2+155 && mouseY<=height/2+375) {
+    music.play();
     clickSound();
     reset();
     mode = PRINCIPAL_MENU;
@@ -667,6 +667,7 @@ void gameEnd(int win) {
   fill(80);
   textSize(70);
   if (win == 2) {
+    music.pause();
     //sonido victoria
     if (note <= 7) {
       osc.play(pow(2, ((60+note-69)/12.0)) * 440, 0.5);
@@ -677,6 +678,7 @@ void gameEnd(int win) {
     textSize(40);
     text("¡Vuelve mañana a por más gestos!", width/2, 300);
   } else {
+    music.pause();
     //sonido derrota
     if (note >= 0) {
       osc.play(pow(2, ((60+note-69)/12.0)) * 440, 0.5);
