@@ -669,8 +669,8 @@ void gameEnd(int win) {
   if (win == 2) {
     //sonido victoria
     if (note <= 7) {
-      triOsc.play(pow(2, ((60+note-69)/12.0)) * 440, 0.5);
-      env.play(triOsc, 0.003, 0.2, 0.2, 1.5);
+      osc.play(pow(2, ((60+note-69)/12.0)) * 440, 0.5);
+      env.play(osc, 0.003, 0.2, 0.2, 1.5);
       note++;
     }
     text("¡VICTORIA!", width/2, 200);
@@ -679,8 +679,8 @@ void gameEnd(int win) {
   } else {
     //sonido derrota
     if (note >= 0) {
-      triOsc.play(pow(2, ((60+note-69)/12.0)) * 440, 0.5);
-      env.play(triOsc, 0.003, 0.2, 0.2, 1.5);
+      osc.play(pow(2, ((60+note-69)/12.0)) * 440, 0.5);
+      env.play(osc, 0.003, 0.2, 0.2, 1.5);
       note--;
     }
     text("DERROTA...", width/2, 200);
