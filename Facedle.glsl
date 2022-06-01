@@ -1,3 +1,5 @@
+// Fragment shader made for Facedle Project
+// Rotating cartoonish face which displays all elements used for interaction in the game
 #ifdef GL_ES
 precision mediump float;
 #endif
