@@ -1,5 +1,6 @@
 // Fragment shader made for Facedle Project
 // Rotating cartoonish face which displays all elements used for interaction in the game
+// Online editor to view it: http://editor.thebookofshaders.com/ 
 #ifdef GL_ES
 precision mediump float;
 #endif
@@ -49,6 +50,5 @@ void main(){
     c -= circle(st,vec2(.15, .2), sin(u_time*2.)-0.9);
     vec2 pos=vec2(st.x+0.35,st.y+0.3);
     c-=rect(pos, vec2(sin(u_time)-0.7,.1));
-    
-	gl_FragColor = vec4(vec3(c), 1.0);
+    gl_FragColor = vec4(vec3(c), 1.0);
 }
