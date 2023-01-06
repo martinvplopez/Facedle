@@ -9,6 +9,6 @@ The game also includes a visual game interface, where the player can see the ima
 
 
 
-[![Demo CountPages alpha](https://share.gifyoutube.com/KzB6Gb.gif)](https://www.youtube.com/watch?v=ek1j272iAmc)
+Trailer: https://github.com/martinvplopez/Facedle/blob/main/Facedle_Reel.mp4
 
 Inspired by *Wordle*
